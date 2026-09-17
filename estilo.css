@@ -1,0 +1,239 @@
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  background: #fafafa;
+  color: #111827;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+
+/* HEADER */
+header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 16px 0;
+  margin-bottom: 24px;
+}
+.header-inner {
+  max-width: 1100px; margin: 0 auto; padding: 0 24px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px;
+}
+.brand { display: flex; align-items: center; gap: 14px; }
+.brand-logo { width: 52px; height: 52px; flex-shrink: 0; object-fit: contain; display: block; }
+.brand-text h1 { font-size: 16px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+.brand-text p { font-size: 12px; color: #6b7280; margin: 2px 0 0 0; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* BOTONES */
+button, .btn {
+  font-family: inherit; font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  background: #ffffff; color: #111827;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .12s, border-color .12s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+button:hover, .btn:hover { background: #f9fafb; border-color: #9ca3af; }
+button.primary { background: #111827; color: #ffffff; border-color: #111827; }
+button.primary:hover { background: #000000; border-color: #000000; }
+button.danger { color: #b91c1c; border-color: #fca5a5; }
+button.danger:hover { background: #fef2f2; }
+button.icon-only { padding: 4px 8px; line-height: 1; }
+.icon { width: 14px; height: 14px; }
+
+/* PANEL */
+.panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.panel-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+.panel-head h2 {
+  font-size: 12px; font-weight: 600; margin: 0;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: #374151;
+}
+.panel-body { padding: 16px; }
+.panel-body.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.panel-foot {
+  padding: 14px 16px;
+  border-top: 1px solid #e5e7eb;
+  display: flex; justify-content: flex-end; gap: 8px;
+}
+
+/* CAMPOS */
+.field label {
+  display: block; font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: #6b7280; margin-bottom: 4px;
+}
+.field label .opt {
+  font-weight: 500; text-transform: none; letter-spacing: 0;
+  color: #9ca3af; font-size: 11px;
+}
+.field input, .field select {
+  width: 100%; padding: 7px 10px;
+  border: 1px solid #d1d5db; border-radius: 6px;
+  font-size: 14px; font-family: inherit;
+  background: #ffffff; color: #111827;
+}
+.field input:focus, .field select:focus { outline: none; border-color: #111827; }
+.field .help { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+
+/* NOMENCLADOR */
+.hidden { display: none !important; }
+.tabla-nomenclador { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tabla-nomenclador th {
+  text-align: left; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+  color: #ffffff; background: #2f5741;
+  padding: 10px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.tabla-nomenclador td {
+  padding: 9px 14px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #111827;
+}
+.tabla-nomenclador tbody tr:nth-child(even) td { background: #fafafa; }
+.tabla-nomenclador tbody tr:hover td { background: #f3f4f6; }
+.tabla-nomenclador td:first-child {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #374151;
+}
+
+/* EMPTY */
+.empty {
+  padding: 48px 24px; text-align: center;
+  color: #9ca3af; font-size: 13px;
+}
+
+/* ─── PLANILLA / FACTURA ─────────────────────────────────────── */
+.planilla {
+  background: #ffffff;
+  padding: 24px;
+  margin: 0 0 24px 0;
+  border-top: 1px solid #e5e7eb;
+  color: #000;
+}
+.planilla:first-child { border-top: none; }
+.planilla-acciones {
+  display: flex; justify-content: flex-end; gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tabla-anexo {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000;
+}
+.tabla-anexo td {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  vertical-align: middle;
+  word-break: break-word;
+  height: 24px;
+}
+.tabla-anexo .titulo-anexo {
+  border: none;
+  text-align: center;
+  font-weight: 700;
+  font-style: italic;
+  font-size: 13px;
+  padding: 2px 0;
+}
+.tabla-anexo .seccion {
+  background: #f3f4f6;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10.5px;
+  letter-spacing: .03em;
+  text-align: center;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.tabla-anexo .label {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: .03em;
+}
+.tabla-anexo .valor { font-size: 11.5px; }
+.tabla-anexo .valor-grande { font-weight: 600; font-size: 13px; }
+.tabla-anexo .centro { text-align: center; }
+.tabla-anexo .chico { font-size: 9.5px; }
+.tabla-anexo .firma {
+  height: 60px;
+  vertical-align: top;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+.tabla-anexo .sin-borde { border: none; }
+
+/* ─── IMPRESIÓN ──────────────────────────────────────────────── */
+@media print {
+  @page { size: A4 portrait; margin: 10mm; }
+
+  html, body { background: #fff !important; }
+
+  /* Ocultar SOLO lo que tiene .no-print */
+  .no-print { display: none !important; }
+
+  .wrap { max-width: 100% !important; padding: 0 !important; margin: 0 !important; }
+
+  /* El panel que contiene las planillas NO debe ocultarse */
+  #panelResumen {
+    display: block !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  #panelResumen .panel-body { padding: 0 !important; }
+
+  /* Planillas: una por página */
+  .planilla {
+    padding: 0 !important;
+    margin: 0 0 10mm 0 !important;
+    page-break-after: always;
+    page-break-inside: avoid;
+    border: none !important;
+  }
+  .planilla:last-child { page-break-after: auto; }
+  .planilla-acciones { display: none !important; }
+
+  /* Si es "imprimir una sola", ocultar las demás */
+  body.print-single .planilla:not(.print-target) { display: none !important; }
+  body.print-single .print-target { page-break-after: auto; }
+
+  /* Ajustes de la tabla para impresión */
+  .tabla-anexo { font-size: 10px; }
+  .tabla-anexo td { padding: 3px 5px; height: 20px; }
+  .tabla-anexo .titulo-anexo { font-size: 11px; }
+  .tabla-anexo .seccion { font-size: 9px; }
+  .tabla-anexo .label { font-size: 8.5px; }
+  .tabla-anexo .valor { font-size: 10px; }
+  .tabla-anexo .valor-grande { font-size: 11px; }
+  .tabla-anexo .firma { height: 50px; }
+}

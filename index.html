@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/webp" href="santa fe.webp">
+<title>Anexo II — Hospital Julio César Villanueva</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<header class="no-print">
+  <div class="header-inner">
+    <div class="brand">
+      <img src="santa fe.webp" alt="Escudo de Santa Fe" class="brand-logo">
+      <div class="brand-text">
+        <h1>Hospital Julio César Villanueva</h1>
+        <p>Anexo II — Comprobante de Atención de Obras Sociales</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" onclick="toggleNomenclador()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Ver nomenclador
+      </button>
+      <button type="button" onclick="scrollAResumen()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Ver planillas (<span id="badgeCantidad">0</span>)
+      </button>
+      <button type="button" onclick="vaciarTodo()" class="danger">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        Limpiar formulario
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- NOMENCLADOR -->
+  <div id="panelNomenclador" class="panel hidden no-print">
+    <div class="panel-head">
+      <h2>Nomenclador HPGD — Códigos disponibles</h2>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <table class="tabla-nomenclador">
+        <thead>
+          <tr>
+            <th style="width:140px">CÓDIGO</th>
+            <th>CONCEPTO</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyNomenclador"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <form id="form" class="panel no-print" onsubmit="generar(event)">
+
+    <div class="panel-head"><h2>Obra Social</h2></div>
+    <div class="panel-body grid">
+      <div class="field">
+        <label>Seleccionar</label>
+        <select id="obraSocial" required></select>
+        <div class="help" id="rnos"></div>
+      </div>
+    </div>
+
+    <div class="panel-head"><h2>Datos del Beneficiario</h2></div>
+    <div class="panel-body grid">
+      <div class="field">
+        <label>Apellidos y Nombres <span class="opt">(opcional)</span></label>
+        <input type="text" id="nombre" placeholder="Ej: FOSSATTI ROSA MARIA" />
+      </div>
+      <div class="field">
+        <label>Nº de Documento <span class="opt">(opcional)</span></label>
+        <input type="text" id="dni" placeholder="Ej: 23748624" />
+      </div>
+      <div class="field">
+        <label>Tipo de Beneficiario</label>
+        <select id="tipoBeneficiario">
+          <option value="">—</option>
+          <option value="TITULAR">Titular</option>
+          <option value="NO TITULAR">No Titular</option>
+          <option value="ADHERENTE">Adherente</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Parentesco</label>
+        <select id="parentesco">
+          <option value="">—</option>
+          <option value="CONYUGE">Cónyuge</option>
+          <option value="HIJO">Hijo</option>
+          <option value="OTRO">Otro</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Sexo</label>
+        <select id="sexo">
+          <option value="">—</option>
+          <option value="MASC">Masculino</option>
+          <option value="FEM">Femenino</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Edad <span class="opt">(opcional)</span></label>
+        <input type="text" id="edad" placeholder="Ej: 50" />
+      </div>
+    </div>
+
+    <div class="panel-head"><h2>Datos de la Atención</h2></div>
+    <div class="panel-body grid">
+      <div class="field">
+        <label>Tipo de Atención</label>
+        <select id="tipoAtencion">
+          <option value="">—</option>
+          <option value="CONSULTA">Consulta</option>
+          <option value="PRACTICA">Práctica</option>
+          <option value="INTERNACION">Internación</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Código HPGD</label>
+        <select id="codigoHPGD">
+          <option value="">—</option>
+          <!-- Se llena desde JS -->
+        </select>
+      </div>
+      <div class="field">
+        <label>Especialidad <span class="opt">(opcional)</span></label>
+        <input type="text" id="especialidad" placeholder="Se completa automáticamente" />
+      </div>
+      <div class="field hidden" id="fieldHPGDotro">
+        <label>Escribir código propio</label>
+        <input type="text" id="codigoHPGDotro" placeholder="Ej: 2.05.1" />
+      </div>
+      <div class="field">
+        <label>Diagnóstico CIE-10 <span class="opt">(opcional)</span></label>
+        <input type="text" id="cie10" placeholder="Ej: J32.9" />
+      </div>
+      <div class="field">
+        <label>Fecha de Atención</label>
+        <input type="date" id="fecha" />
+      </div>
+      <div class="field">
+        <label>Último Recibo — Mes <span class="opt">(opcional)</span></label>
+        <input type="text" id="mesRecibo" placeholder="Ej: 8" />
+      </div>
+      <div class="field">
+        <label>Último Recibo — Año <span class="opt">(opcional)</span></label>
+        <input type="text" id="anioRecibo" placeholder="Ej: 25" />
+      </div>
+    </div>
+
+    <div class="panel-foot">
+      <button type="button" onclick="vaciarTodo()">Limpiar</button>
+      <button type="submit" class="primary">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Guardar y generar PDF
+      </button>
+    </div>
+
+  </form>
+
+  <!-- PLANILLAS / RESUMEN -->
+  <div class="panel" id="panelResumen">
+    <div class="panel-head no-print" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+      <h2>Planillas cargadas</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button type="button" onclick="imprimirTodas()">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Imprimir todas (PDF)
+        </button>
+        <button type="button" onclick="borrarHistorial()" class="danger">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+          Borrar todo
+        </button>
+      </div>
+    </div>
+    <div class="panel-body" style="padding:0">
+      <div id="emptyResumen" class="empty no-print">
+        Todavía no cargaste ninguna planilla. Se van a ir guardando acá automáticamente.
+      </div>
+      <div id="contenedorPlanillas"></div>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
