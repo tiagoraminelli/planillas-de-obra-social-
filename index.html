@@ -1,228 +1,1114 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/webp" href="santa fe.webp" />
-    <title>Anexo II — Hospital Julio César Villanueva</title>
-    <link rel="stylesheet" href="estilo.css" />
-  </head>
-  <body>
-    <header class="topbar no-print">
-      <div class="topbar-inner">
-        <div class="brand">
-          <img
-            src="santa fe.webp"
-            alt="Escudo de Santa Fe"
-            class="brand-logo"
-          />
-          <div class="brand-text">
-            <h1>Hospital Julio César Villanueva</h1>
-            <p>Anexo II — Comprobante de Atención de Obras Sociales</p>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anexo II - Hospital San Cristóbal</title>
+  <link rel="icon" href="santa fe.webp">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      background: #fafafa;
+      color: #111827;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    .hoja-a4 {
+      width: 210mm;
+      min-height: 297mm;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      padding: 10mm 10mm 8mm 10mm;
+      font-family: "Inter", sans-serif;
+      color: #111827;
+      overflow: hidden;
+    }
+
+    /* Casilleros con X */
+    .check-box {
+      display: inline-flex !important;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      line-height: 1;
+      color: #111827;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    @media print {
+
+      html,
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        overflow: hidden !important;
+      }
+
+      body * {
+        visibility: hidden;
+      }
+
+      #printable-area,
+      #printable-area * {
+        visibility: visible;
+      }
+
+      #printable-area {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        padding: 8mm 8mm 6mm 8mm !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        font-size: 9px !important;
+      }
+
+      #printable-area>*,
+      #printable-area>*>* {
+        page-break-inside: avoid !important;
+        page-break-after: avoid !important;
+      }
+
+      #printable-area .text-\[10px\] {
+        font-size: 9px !important;
+      }
+
+      #printable-area .text-\[9px\] {
+        font-size: 8.5px !important;
+      }
+
+      #printable-area .text-\[8px\] {
+        font-size: 7.5px !important;
+      }
+
+      #printable-area .text-\[7px\] {
+        font-size: 7px !important;
+      }
+
+      #printable-area .text-xs {
+        font-size: 10px !important;
+      }
+
+      #printable-area .text-sm {
+        font-size: 11px !important;
+      }
+
+      #printable-area .text-base {
+        font-size: 12px !important;
+      }
+
+      .print-bg-slate {
+        background-color: #f1f5f9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      #printable-area .border-slate-900 {
+        border-color: #000 !important;
+      }
+    }
+
+    @media screen {
+      #printable-area {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="no-print bg-white border-b border-slate-200 sticky top-0 z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4 flex-wrap">
+      <div class="flex items-center gap-3">
+        <img src="santa fe.webp" alt="Santa Fe" class="w-10 h-10 object-contain">
+        <div>
+          <h1 class="text-sm font-semibold text-slate-800 leading-tight">Gestor de Anexo II (HPGD)</h1>
+          <p class="text-xs text-slate-500">Hospital "Julio César Villanueva" - San Cristóbal</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <button onclick="saveCurrentSheet()"
+          class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-floppy-disk text-slate-400"></i> Guardar
+        </button>
+        <button onclick="createNewSheet()"
+          class="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200 rounded hover:bg-slate-100 hover:text-slate-900 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-slate-400"></i> Nuevo
+        </button>
+        <button onclick="window.print()"
+          class="px-3 py-1.5 text-xs font-semibold text-white bg-slate-800 rounded hover:bg-slate-900 transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-print"></i> Imprimir
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="flex-1 max-w-[1600px] w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT PANEL -->
+    <section class="no-print lg:col-span-5 space-y-5 flex flex-col h-[calc(100vh-6rem)] sticky top-20">
+
+      <div class="flex border-b border-slate-200 bg-white rounded-t-xl px-4 pt-3 space-x-4">
+        <button id="tab-btn-form" onclick="switchTab('form')"
+          class="pb-3 text-xs font-semibold border-b-2 border-slate-800 text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-pen-to-square"></i> Edición
+        </button>
+        <button id="tab-btn-history" onclick="switchTab('history')"
+          class="pb-3 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2">
+          <i class="fa-solid fa-folder-open"></i> Historial
+        </button>
+      </div>
+
+      <!-- Tab 1: Form -->
+      <div id="tab-content-form"
+        class="bg-white p-5 rounded-b-xl shadow-sm border border-slate-200/80 overflow-y-auto flex-1 space-y-6">
+
+        <div>
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-user-check"></i> Datos del Beneficiario
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-medium text-slate-600 mb-1">Apellido y Nombre</label>
+              <input type="text" id="inp-nombre"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none uppercase">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">N° de Documento</label>
+              <input type="text" id="inp-dni"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Edad</label>
+              <input type="number" id="inp-edad"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Tipo Beneficiario</label>
+              <select id="inp-tipo-ben"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+                <option value="">-- Sin selección --</option>
+                <option value="Titular">Titular</option>
+                <option value="No Titular">No Titular</option>
+                <option value="Adherente">Adherente</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Parentesco</label>
+              <select id="inp-parentesco"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+                <option value="">-- Sin selección --</option>
+                <option value="Cónyug.">Cónyuge</option>
+                <option value="Hijo">Hijo/a</option>
+                <option value="Otro">Otro</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Sexo</label>
+              <select id="inp-sexo"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+                <option value="">-- Sin especificar --</option>
+                <option value="MASC.">Masculino</option>
+                <option value="FEM.">Femenino</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">N° Carnet / Afiliado</label>
+              <input type="text" id="inp-carnet"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
           </div>
         </div>
-        <div class="topbar-actions">
-          <button type="button" class="btn ghost" onclick="toggleNomenclador()">
-            Nomenclador
+
+        <hr class="border-slate-100">
+
+        <div>
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-hospital-user"></i> Obra Social
+          </h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Catálogo Rápido</label>
+              <select id="inp-os-preset"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none bg-slate-50">
+                <option value="">-- Seleccionar obra social --</option>
+                <option value="pami">PAMI — INSTITUTO NACIONAL DE SERVICIOS SOCIALES PARA JUBILADOS Y PENSIONADOS (RNOS
+                  500807)</option>
+                <option value="osprera">OSPRERA — OBRA SOCIAL DEL PERSONAL RURAL Y ESTIBADORES DE LA REP. ARG. (RNOS
+                  119302)</option>
+                <option value="camioneros">CAMIONEROS (RNOS —)</option>
+                <option value="osecac">OSECAC — OBRA SOCIAL DE LOS EMPLEADOS DE COMERCIO Y ACTIVIDADES CIVILES (RNOS
+                  126205)</option>
+                <option value="ospecon">OSPECON — OBRA SOCIAL DEL PERSONAL DE LA CONSTRUCCIÓN (RNOS 105408)</option>
+                <option value="osdop">OSDOP — OBRA SOCIAL DE DOCENTES PARTICULARES (RNOS 106302)</option>
+                <option value="osfe">OSFE — OBRA SOCIAL FERROVIARIA (RNOS 001300)</option>
+                <option value="ospavial">OSPAVIAL — OBRA SOCIAL PARA EL PERSONAL DE LA ACTIVIDAD VIAL (RNOS 122302)
+                </option>
+                <option value="usuomra">USUOMRA — OBRA SOCIAL DE LA UNIÓN OBRERA METALÚRGICA DE LA REP. ARG. (RNOS
+                  112103)</option>
+                <option value="iapos">IAPOS — INSTITUTO AUTÁRQUICO PROVINCIAL DE OBRA SOCIAL (RNOS —)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Nombre Completo</label>
+              <input type="text" id="inp-os-nombre"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none uppercase">
+            </div>
+            <div class="grid grid-cols-3 gap-3">
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">RNOS</label>
+                <input type="text" id="inp-os-rnos"
+                  class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Fecha Emisión</label>
+                <input type="date" id="inp-os-emision"
+                  class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-600 mb-1">Vencimiento</label>
+                <input type="date" id="inp-os-venc"
+                  class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-100">
+
+        <div>
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-stethoscope"></i> Atención Prestada
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Fecha Atención</label>
+              <input type="date" id="inp-fecha"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">N° Comprobante / Refe</label>
+              <input type="text" id="inp-refe"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-medium text-slate-600 mb-1">Tipo de Atención</label>
+              <div class="flex gap-4 pt-1">
+                <label class="inline-flex items-center text-xs text-slate-700 cursor-pointer">
+                  <input type="checkbox" id="chk-consulta"
+                    class="rounded border-slate-300 text-slate-800 focus:ring-slate-800">
+                  <span class="ml-1.5">Consulta</span>
+                </label>
+                <label class="inline-flex items-center text-xs text-slate-700 cursor-pointer">
+                  <input type="checkbox" id="chk-practica"
+                    class="rounded border-slate-300 text-slate-800 focus:ring-slate-800">
+                  <span class="ml-1.5">Práctica</span>
+                </label>
+                <label class="inline-flex items-center text-xs text-slate-700 cursor-pointer">
+                  <input type="checkbox" id="chk-internacion"
+                    class="rounded border-slate-300 text-slate-800 focus:ring-slate-800">
+                  <span class="ml-1.5">Internación</span>
+                </label>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Nomenclador HPGD</label>
+              <select id="inp-hpgd-preset"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none bg-slate-50">
+                <option value="">-- Catálogo --</option>
+                <option value="1.01">1.01 Consulta Médica General</option>
+                <option value="1.01.1">1.01.1 Consulta en Capas</option>
+                <option value="1.02">1.02 Consulta Médica Especializada</option>
+                <option value="1.03">1.03 Hasta 3 Prácticas</option>
+                <option value="1.04">1.04 Atención en Guardia</option>
+                <option value="1.05">1.05 Eco, Radio, Tomo</option>
+                <option value="1.05.1">1.05.1 Ergometría</option>
+                <option value="1.05.2">1.05.2 Mamografía, Senografía</option>
+                <option value="1.06">1.06 Ecografía</option>
+                <option value="1.07">1.07 Atención de Urgencia en Guardia</option>
+                <option value="2.01">2.01 Hemograma Completo</option>
+                <option value="3.05">3.05 Radiografía de Tórax</option>
+                <option value="4.01">4.01 Internación</option>
+                <option value="4.10">4.10 Ecografía Abdominal</option>
+              </select>
+
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Código HPGD</label>
+              <input type="text" id="inp-codigo-hpgd"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Diagnóstico CIE-10</label>
+              <input type="text" id="inp-cie10"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none uppercase font-mono">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-medium text-slate-600 mb-1">Especialidad / Descripción</label>
+              <input type="text" id="inp-especialidad"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none uppercase">
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-100">
+
+        <div>
+          <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-receipt"></i> Certificación y Recibo
+          </h3>
+          <div class="bg-slate-50 border border-slate-200 rounded-md p-3 mb-3">
+            <p class="text-[11px] text-slate-500 flex items-center gap-2">
+              <i class="fa-solid fa-wand-magic-sparkles text-slate-400"></i>
+              El Último Recibo se completa automáticamente como el <strong>mes anterior</strong> a la fecha de atención.
+            </p>
+          </div>
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Último Recibo</label>
+              <input type="text" id="inp-recibo-tipo"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Mes</label>
+              <input type="number" id="inp-recibo-mes"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Año</label>
+              <input type="number" id="inp-recibo-anio"
+                class="w-full text-xs px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-slate-800 focus:outline-none font-mono">
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-2 flex justify-between items-center">
+          <button onclick="resetForm()"
+            class="px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-md transition flex items-center gap-1">
+            <i class="fa-solid fa-rotate-left"></i> Restablecer
           </button>
-          <button type="button" class="btn ghost" onclick="scrollAResumen()">
-            Planillas <span class="pill" id="badgeCantidad">0</span>
-          </button>
-          <button type="button" class="btn danger" onclick="vaciarTodo()">
-            Limpiar formulario
+          <span class="text-[10px] text-slate-400">Guardado automático local</span>
+        </div>
+      </div>
+
+      <!-- Tab 2: History -->
+      <div id="tab-content-history"
+        class="bg-white p-5 rounded-b-xl shadow-sm border border-slate-200/80 overflow-y-auto flex-1 hidden space-y-4">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div class="relative flex-1 mr-3">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+            <input type="text" id="inp-search" oninput="renderHistoryList()"
+              class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-300 rounded-md focus:outline-none"
+              placeholder="Buscar...">
+          </div>
+          <div class="flex gap-2">
+            <button onclick="exportDataJSON()" title="Exportar JSON"
+              class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs">
+              <i class="fa-solid fa-download"></i>
+            </button>
+            <label title="Importar JSON"
+              class="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded text-xs cursor-pointer">
+              <i class="fa-solid fa-upload"></i>
+              <input type="file" accept=".json" onchange="importDataJSON(event)" class="hidden">
+            </label>
+          </div>
+        </div>
+        <div id="history-list" class="space-y-2"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: HOJA A4 -->
+    <section class="lg:col-span-7 flex justify-center items-start">
+      <div id="printable-area" class="hoja-a4">
+
+        <!-- HEADER -->
+        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-2">
+          <div>
+            <span class="text-[10px] font-black tracking-widest text-slate-500 uppercase block">ANEXO II</span>
+            <h2 class="text-sm font-extrabold text-slate-900 tracking-tight leading-snug">COMPROBANTE DE ATENCIÓN DE
+              BENEFICIARIO Y OBRA SOCIAL</h2>
+          </div>
+          <div class="text-right flex flex-col items-end">
+            <img src="santa fe.webp" alt="Santa Fe" class="w-14 h-auto mb-0.5">
+            <span class="text-[9px] uppercase font-bold text-slate-700 tracking-wide">Hospital San Cristóbal</span>
+          </div>
+        </div>
+
+        <!-- BLOQUE 1 -->
+        <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[10px] mt-2">
+          <div class="col-span-8 border-r border-slate-900">
+            <div class="p-2 border-b border-slate-900">
+              <span class="text-[8px] font-bold uppercase text-slate-500 block">HOSPITAL</span>
+            </div>
+            <div class="p-2 flex items-center justify-center">
+              <span class="font-bold text-sm text-slate-900">San Cristóbal "Julio César Villanueva"</span>
+            </div>
+          </div>
+          <div class="col-span-4 flex flex-col bg-slate-50 print-bg-slate">
+            <div class="p-1.5 text-center border-b border-slate-900">
+              <span class="text-[8px] font-bold text-slate-600 uppercase">CODIGO HPGD</span>
+              <span class="font-mono font-bold text-slate-900">21.32.0557</span>
+            </div>
+            <div class="p-1.5 text-center border-b border-slate-900">
+              <span class="text-[8px] font-bold text-slate-600 uppercase block">REFES</span>
+              <span class="font-mono font-bold text-slate-900 text-[10px]">10820912184192</span>
+            </div>
+            <div class="p-1.5 flex flex-col justify-center flex-grow">
+              <div class="flex justify-between items-center text-[9px]">
+                <span class="font-bold text-slate-600 uppercase">FECHA:</span>
+                <span id="doc-fecha" class="font-mono font-bold text-slate-900">--/--/----</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 2 -->
+        <div class="border border-slate-900 border-t-0 text-[10px] flex flex-col mt-2 flex-grow">
+          <div
+            class="bg-slate-100 print-bg-slate p-1 text-center font-bold text-[9px] tracking-wider uppercase border-b border-slate-900">
+            DATOS DEL BENEFICIARIO
+          </div>
+          <div class="grid grid-cols-12 flex-grow">
+            <div class="col-span-8 p-2 border-r border-slate-900 flex flex-col justify-center">
+              <span class="text-[8px] font-bold text-slate-500 uppercase block">APELLIDO Y NOMBRE</span>
+              <span id="doc-nombre" class="font-bold text-sm text-slate-900 uppercase tracking-wide mt-1"></span>
+            </div>
+            <div class="col-span-4 p-2 flex flex-col justify-center">
+              <span class="text-[8px] font-bold text-slate-500 uppercase block">N° DE DOCUMENTO:</span>
+              <span id="doc-dni" class="font-mono font-bold text-sm text-slate-900 mt-1"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 3 -->
+        <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[9px] mt-2 flex-grow">
+          <div class="col-span-4 border-r border-slate-900 p-2 flex flex-col justify-center">
+            <span class="font-bold uppercase text-slate-600 block mb-1.5">TIPO DE BENEFICIARIO</span>
+            <div class="flex justify-between items-center px-0.5">
+              <label class="flex items-center space-x-1">
+                <span id="box-titular" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>Titular</span>
+              </label>
+              <label class="flex items-center space-x-1">
+                <span id="box-notitular" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>No Titular</span>
+              </label>
+              <label class="flex items-center space-x-1">
+                <span id="box-adherente" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>Adhere.</span>
+              </label>
+            </div>
+          </div>
+          <div class="col-span-4 border-r border-slate-900 p-2 flex flex-col justify-center">
+            <span class="font-bold uppercase text-slate-600 block mb-1.5">PARENTESCO</span>
+            <div class="flex justify-between items-center px-0.5">
+              <label class="flex items-center space-x-1">
+                <span id="box-conyug" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>Cónyug.</span>
+              </label>
+              <label class="flex items-center space-x-1">
+                <span id="box-hijo" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>Hijo</span>
+              </label>
+              <label class="flex items-center space-x-1">
+                <span id="box-otro" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>Otro</span>
+              </label>
+            </div>
+          </div>
+          <div class="col-span-2 border-r border-slate-900 p-2 flex flex-col justify-center">
+            <span class="font-bold uppercase text-slate-600 block mb-1.5">SEXO</span>
+            <div class="flex justify-around items-center">
+              <label class="flex items-center space-x-0.5">
+                <span id="box-masc" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>M.</span>
+              </label>
+              <label class="flex items-center space-x-0.5">
+                <span id="box-fem" class="check-box w-4 h-4 border border-slate-900"></span>
+                <span>F.</span>
+              </label>
+            </div>
+          </div>
+          <div class="col-span-2 p-2 text-center flex flex-col justify-center">
+            <span class="font-bold uppercase text-slate-600 block mb-1.5">EDAD</span>
+            <span id="doc-edad" class="font-mono font-bold text-sm text-slate-900"></span>
+          </div>
+        </div>
+
+        <!-- BLOQUE 4 -->
+        <div class="border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow flex flex-col">
+          <div
+            class="bg-slate-100 print-bg-slate p-1 text-center font-bold text-[9px] tracking-wider uppercase border-b border-slate-900 flex justify-between px-3">
+            <span>TIPO DE ATENCIÓN Y PRESTACIÓN HPGD</span>
+            <span class="font-mono" id="doc-fecha-atencion">FECHA: --/--/----</span>
+          </div>
+          <div class="grid grid-cols-12 divide-x divide-slate-900 flex-grow">
+            <div class="col-span-4 p-2 flex flex-col justify-center gap-2 bg-slate-50/50">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-semibold text-slate-700">• CONSULTA</span>
+                <span id="box-consulta" class="check-box w-4 h-4 border border-slate-900 text-[11px]"></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-semibold text-slate-700">• PRÁCTICA</span>
+                <span id="box-practica" class="check-box w-4 h-4 border border-slate-900 text-[11px]"></span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-semibold text-slate-700">• INTERNACIÓN</span>
+                <span id="box-internacion" class="check-box w-4 h-4 border border-slate-900 text-[11px]"></span>
+              </div>
+            </div>
+            <div class="col-span-8 divide-y divide-slate-900">
+              <div class="p-2 flex justify-between items-center">
+                <span class="text-[9px] font-bold text-slate-500 uppercase">ESPECIALIDAD:</span>
+                <span id="doc-especialidad" class="font-bold text-slate-900 uppercase"></span>
+              </div>
+              <div class="p-2 flex justify-between items-center">
+                <span class="text-[9px] font-bold text-slate-500 uppercase">CÓDIGO n. HPGD:</span>
+                <span id="doc-codigo-hpgd" class="font-mono font-bold text-slate-900"></span>
+              </div>
+              <div class="p-2 flex justify-between items-center">
+                <span class="text-[9px] font-bold text-slate-500 uppercase">DIAGNÓSTICO CIE 10:</span>
+                <span id="doc-cie10" class="font-mono font-bold text-slate-900"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 5 -->
+        <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow">
+          <div class="col-span-7 p-2 border-r border-slate-900 flex flex-col justify-between">
+            <span class="text-[9px] font-bold uppercase text-slate-500">CERTIFICACIÓN MÉDICA</span>
+            <div class="text-center my-auto opacity-30 italic text-[10px] text-slate-400">
+              [ Firma del Médico y Sello con N° de Matrícula ]
+            </div>
+            <div class="border-t border-dashed border-slate-400 pt-0.5 text-center text-[8px] text-slate-600">
+              Firma del Médico y Sello con N° de Matrícula
+            </div>
+          </div>
+          <div class="col-span-5 flex flex-col">
+            <div class="grid grid-cols-3 border-b border-slate-900 bg-slate-100 print-bg-slate">
+              <div
+                class="p-1 text-center font-bold text-[8px] tracking-wider uppercase border-r border-slate-900 col-span-1 flex items-center justify-center">
+                Último Recibo
+              </div>
+              <div class="p-1 text-center font-bold text-[9px] tracking-wider uppercase border-r border-slate-900">
+                MES
+              </div>
+              <div class="p-1 text-center font-bold text-[9px] tracking-wider uppercase">
+                AÑO
+              </div>
+            </div>
+            <div class="grid grid-cols-3 flex-grow">
+              <div class="p-1 text-center text-[9px] border-r border-slate-900 flex items-center justify-center">
+                de Sueldo
+              </div>
+              <div class="p-1 text-center border-r border-slate-900 flex items-center justify-center">
+                <span id="doc-recibo-mes" class="font-mono font-bold text-sm text-slate-900"></span>
+              </div>
+              <div class="p-1 text-center flex items-center justify-center">
+                <span id="doc-recibo-anio" class="font-mono font-bold text-sm text-slate-900"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 6 -->
+        <div class="border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow flex flex-col">
+          <div class="grid grid-cols-12 border-b border-slate-900 flex-grow">
+            <div class="col-span-9 p-2 border-r border-slate-900 flex flex-col justify-center">
+              <span class="text-[8px] font-bold text-slate-500 uppercase block">DATOS DE LA OBRA SOCIAL: Nombre
+                Completo</span>
+              <span id="doc-os-nombre" class="font-bold text-slate-900 uppercase mt-0.5"></span>
+            </div>
+            <div class="col-span-3 p-2 bg-slate-50 print-bg-slate flex flex-col justify-center">
+              <span class="text-[8px] font-bold text-slate-500 uppercase block">RNOS</span>
+              <span id="doc-os-rnos" class="font-mono font-bold text-slate-900 text-xs mt-0.5"></span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 divide-x divide-slate-900 text-center text-[9px] flex-grow">
+            <div class="p-2 flex flex-col justify-center">
+              <span class="text-[7px] font-bold text-slate-500 uppercase block">N° DE CARNET</span>
+              <span id="doc-carnet" class="font-mono font-bold text-slate-900 mt-0.5"></span>
+            </div>
+            <div class="p-2 flex flex-col justify-center">
+              <span class="text-[7px] font-bold text-slate-500 uppercase block">FECHA DE EMISIÓN</span>
+              <span id="doc-os-emision" class="font-mono font-bold text-slate-900 mt-0.5">--/--/----</span>
+            </div>
+            <div class="p-2 flex flex-col justify-center">
+              <span class="text-[7px] font-bold text-slate-500 uppercase block">VENCIMIENTO</span>
+              <span id="doc-os-venc" class="font-mono font-bold text-slate-900 mt-0.5">--/--/----</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BLOQUE 7 -->
+        <div
+          class="border border-slate-900 border-t-0 grid grid-cols-3 divide-x divide-slate-900 text-[8px] mt-2 flex-grow">
+          <div class="p-2 flex flex-col justify-between text-center">
+            <span class="font-bold text-slate-700 uppercase">FIRMA RESPONSABLE</span>
+            <div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Firma y Sello</div>
+          </div>
+          <div class="p-2 flex flex-col justify-between text-center">
+            <span class="font-bold text-slate-700 uppercase">ACLARACIÓN</span>
+            <div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Aclaración de Firma</div>
+          </div>
+          <div class="p-2 flex flex-col justify-between text-center">
+            <span class="font-bold text-slate-700 uppercase">BENEFICIARIO</span>
+            <div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Firma del Beneficiario</div>
+          </div>
+        </div>
+
+        <div class="pt-2 mt-2 text-[7px] text-slate-400 border-t border-slate-200 flex justify-between">
+          <span>Documento Oficial HPGD - Hospital San Cristóbal "Julio César Villanueva"</span>
+          <span>Anexo II - Comprobante Original</span>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ═══════════════════════════════════════════════════════════
+    // CATÁLOGOS
+    // ═══════════════════════════════════════════════════════════
+    const OS_CATALOG = {
+      pami: { nombre: "INSTITUTO NACIONAL DE SERVICIOS SOCIALES PARA JUBILADOS Y PENSIONADOS", rnos: "500807" },
+      osprera: { nombre: "OBRA SOCIAL DEL PERSONAL RURAL Y ESTIBADORES DE LA REP. ARG.", rnos: "119302" },
+      camioneros: { nombre: "CAMIONEROS", rnos: "" },
+      osecac: { nombre: "OBRA SOCIAL DE LOS EMPLEADOS DE COMERCIO Y ACTIVIDADES CIVILES", rnos: "126205" },
+      ospecon: { nombre: "OBRA SOCIAL DEL PERSONAL DE LA CONSTRUCCIÓN", rnos: "105408" },
+      osdop: { nombre: "OBRA SOCIAL DE DOCENTES PARTICULARES", rnos: "106302" },
+      osfe: { nombre: "OBRA SOCIAL FERROVIARIA", rnos: "001300" },
+      ospavial: { nombre: "OBRA SOCIAL PARA EL PERSONAL DE LA ACTIVIDAD VIAL", rnos: "122302" },
+      usuomra: { nombre: "OBRA SOCIAL DE LA UNIÓN OBRERA METALÚRGICA DE LA REP. ARG.", rnos: "112103" },
+      iapos: { nombre: "INSTITUTO AUTÁRQUICO PROVINCIAL DE OBRA SOCIAL", rnos: "" }
+    };
+
+    const HPGD_CATALOG = {
+      "1.01": "CONSULTA MEDICA GENERAL",
+      "1.01.1": "CONSULTA EN CAPAS",
+      "1.02": "CONSULTA MEDICA ESPECIALIZADA",
+      "1.03": "HASTA 3 PRACTICAS",
+      "1.04": "ATENCION EN GUARDIA",
+      "1.05": "ECO, RADIO, TOMO",
+      "1.05.1": "ERGOMETRIA",
+      "1.05.2": "MAMOGRAFIA, SENOGRAFIA",
+      "1.06": "ECOGRAFIA",
+      "1.07": "ATENCION DE URGENCIA EN GUARDIA",
+      "2.01": "HEMOGRAMA COMPLETO",
+      "3.05": "RADIOGRAFIA DE TORAX",
+      "4.01": "INTERNACION",
+      "4.10": "ECOGRAFIA ABDOMINAL"
+    };
+
+
+    let currentRecordId = null;
+    let recordsHistory = [];
+
+    // ═══════════════════════════════════════════════════════════
+    // HELPERS
+    // ═══════════════════════════════════════════════════════════
+    function $(id) { return document.getElementById(id); }
+
+    function setText(id, value) {
+      const el = $(id);
+      if (el) el.textContent = (value == null ? '' : String(value));
+    }
+
+    function setCheck(id, marked) {
+      const el = $(id);
+      if (el) el.textContent = marked ? 'X' : '';
+    }
+
+    function formatDate(isoStr) {
+      if (!isoStr) return '--/--/----';
+      const p = isoStr.split('-');
+      if (p.length !== 3) return '--/--/----';
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // UPDATE SHEET
+    // ═══════════════════════════════════════════════════════════
+    function updateSheet() {
+      setText('doc-nombre', $('inp-nombre').value);
+      setText('doc-dni', $('inp-dni').value);
+      setText('doc-edad', $('inp-edad').value);
+      setText('doc-carnet', $('inp-carnet').value);
+
+      setText('doc-refe', $('inp-refe').value);
+      setText('doc-fecha', formatDate($('inp-fecha').value));
+      setText('doc-fecha-atencion', 'FECHA: ' + formatDate($('inp-fecha').value));
+
+      setText('doc-os-nombre', $('inp-os-nombre').value);
+      setText('doc-os-rnos', $('inp-os-rnos').value);
+      setText('doc-os-emision', formatDate($('inp-os-emision').value));
+      setText('doc-os-venc', formatDate($('inp-os-venc').value));
+
+      setText('doc-codigo-hpgd', $('inp-codigo-hpgd').value);
+      setText('doc-cie10', $('inp-cie10').value);
+      setText('doc-especialidad', $('inp-especialidad').value);
+
+      setText('doc-recibo-tipo', $('inp-recibo-tipo').value);
+      setText('doc-recibo-mes', $('inp-recibo-mes').value);
+      setText('doc-recibo-anio', $('inp-recibo-anio').value);
+
+      const tipoBen = $('inp-tipo-ben').value;
+      setCheck('box-titular', tipoBen === 'Titular');
+      setCheck('box-notitular', tipoBen === 'No Titular');
+      setCheck('box-adherente', tipoBen === 'Adherente');
+
+      const parentesco = $('inp-parentesco').value;
+      setCheck('box-conyug', parentesco === 'Cónyug.');
+      setCheck('box-hijo', parentesco === 'Hijo');
+      setCheck('box-otro', parentesco === 'Otro');
+
+      const sexo = $('inp-sexo').value;
+      setCheck('box-masc', sexo === 'MASC.');
+      setCheck('box-fem', sexo === 'FEM.');
+
+      setCheck('box-consulta', $('chk-consulta').checked);
+      setCheck('box-practica', $('chk-practica').checked);
+      setCheck('box-internacion', $('chk-internacion').checked);
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // FECHA -> RECIBO ANTERIOR
+    // ═══════════════════════════════════════════════════════════
+    function onFechaChange() {
+      const fechaStr = $('inp-fecha').value;
+      if (fechaStr) {
+        const parts = fechaStr.split('-').map(Number);
+        const y = parts[0], m = parts[1];
+        let mesAnt = m - 1, anioAnt = y;
+        if (mesAnt === 0) { mesAnt = 12; anioAnt = y - 1; }
+        $('inp-recibo-mes').value = mesAnt;
+        $('inp-recibo-anio').value = anioAnt;
+        if (!$('inp-recibo-tipo').value) $('inp-recibo-tipo').value = 'de Sueldo';
+      }
+      updateSheet();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // TABS
+    // ═══════════════════════════════════════════════════════════
+    function switchTab(tab) {
+      const formTab = $('tab-content-form');
+      const historyTab = $('tab-content-history');
+      const btnForm = $('tab-btn-form');
+      const btnHistory = $('tab-btn-history');
+      if (tab === 'form') {
+        formTab.classList.remove('hidden');
+        historyTab.classList.add('hidden');
+        btnForm.className = "pb-3 text-xs font-semibold border-b-2 border-slate-800 text-slate-800 flex items-center gap-2";
+        btnHistory.className = "pb-3 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+      } else {
+        formTab.classList.add('hidden');
+        historyTab.classList.remove('hidden');
+        btnHistory.className = "pb-3 text-xs font-semibold border-b-2 border-slate-800 text-slate-800 flex items-center gap-2";
+        btnForm.className = "pb-3 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+        renderHistoryList();
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // CATÁLOGOS RÁPIDOS
+    // ═══════════════════════════════════════════════════════════
+    function applyOSPreset() {
+      const val = $('inp-os-preset').value;
+      if (val && OS_CATALOG[val]) {
+        $('inp-os-nombre').value = OS_CATALOG[val].nombre;
+        $('inp-os-rnos').value = OS_CATALOG[val].rnos;
+        updateSheet();
+      }
+    }
+
+    function applyHpgdPreset() {
+      const val = $('inp-hpgd-preset').value;
+      if (val && HPGD_CATALOG[val]) {
+        $('inp-codigo-hpgd').value = val;
+        $('inp-especialidad').value = HPGD_CATALOG[val];
+        updateSheet();
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // RESET / NUEVO
+    // ═══════════════════════════════════════════════════════════
+    function resetForm() {
+      currentRecordId = null;
+      ['inp-nombre', 'inp-dni', 'inp-edad', 'inp-carnet',
+        'inp-tipo-ben', 'inp-parentesco', 'inp-sexo',
+        'inp-os-preset', 'inp-os-nombre', 'inp-os-rnos', 'inp-os-emision', 'inp-os-venc',
+        'inp-fecha', 'inp-refe',
+        'inp-hpgd-preset', 'inp-codigo-hpgd', 'inp-cie10', 'inp-especialidad',
+        'inp-recibo-tipo', 'inp-recibo-mes', 'inp-recibo-anio'
+      ].forEach(id => { if ($(id)) $(id).value = ''; });
+      ['chk-consulta', 'chk-practica', 'chk-internacion'].forEach(id => { if ($(id)) $(id).checked = false; });
+      updateSheet();
+    }
+
+    function createNewSheet() {
+      resetForm();
+      switchTab('form');
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // LOCAL STORAGE
+    // ═══════════════════════════════════════════════════════════
+    function getFormData() {
+      return {
+        id: currentRecordId || Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        nombre: $('inp-nombre').value,
+        dni: $('inp-dni').value,
+        edad: $('inp-edad').value,
+        carnet: $('inp-carnet').value,
+        tipoBen: $('inp-tipo-ben').value,
+        parentesco: $('inp-parentesco').value,
+        sexo: $('inp-sexo').value,
+        osNombre: $('inp-os-nombre').value,
+        osRnos: $('inp-os-rnos').value,
+        osEmision: $('inp-os-emision').value,
+        osVenc: $('inp-os-venc').value,
+        fecha: $('inp-fecha').value,
+        refe: $('inp-refe').value,
+        chkConsulta: $('chk-consulta').checked,
+        chkPractica: $('chk-practica').checked,
+        chkInternacion: $('chk-internacion').checked,
+        codigoHpgd: $('inp-codigo-hpgd').value,
+        cie10: $('inp-cie10').value,
+        especialidad: $('inp-especialidad').value,
+        reciboTipo: $('inp-recibo-tipo').value,
+        reciboMes: $('inp-recibo-mes').value,
+        reciboAnio: $('inp-recibo-anio').value
+      };
+    }
+
+    function saveCurrentSheet() {
+      const data = getFormData();
+      const idx = recordsHistory.findIndex(r => r.id === data.id);
+      if (idx >= 0) recordsHistory[idx] = data;
+      else { recordsHistory.unshift(data); currentRecordId = data.id; }
+      localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+      alert('Planilla guardada exitosamente.');
+    }
+
+    function loadSavedHistory() {
+      const raw = localStorage.getItem('anexo_ii_records');
+      if (raw) { try { recordsHistory = JSON.parse(raw); } catch (e) { recordsHistory = []; } }
+    }
+
+    function loadRecordIntoForm(id) {
+      const r = recordsHistory.find(x => x.id === id);
+      if (!r) return;
+      currentRecordId = r.id;
+      $('inp-nombre').value = r.nombre || '';
+      $('inp-dni').value = r.dni || '';
+      $('inp-edad').value = r.edad || '';
+      $('inp-carnet').value = r.carnet || '';
+      $('inp-tipo-ben').value = r.tipoBen || '';
+      $('inp-parentesco').value = r.parentesco || '';
+      $('inp-sexo').value = r.sexo || '';
+      $('inp-os-nombre').value = r.osNombre || '';
+      $('inp-os-rnos').value = r.osRnos || '';
+      $('inp-os-emision').value = r.osEmision || '';
+      $('inp-os-venc').value = r.osVenc || '';
+      $('inp-fecha').value = r.fecha || '';
+      $('inp-refe').value = r.refe || '';
+      $('chk-consulta').checked = !!r.chkConsulta;
+      $('chk-practica').checked = !!r.chkPractica;
+      $('chk-internacion').checked = !!r.chkInternacion;
+      $('inp-codigo-hpgd').value = r.codigoHpgd || '';
+      $('inp-cie10').value = r.cie10 || '';
+      $('inp-especialidad').value = r.especialidad || '';
+      $('inp-recibo-tipo').value = r.reciboTipo || '';
+      $('inp-recibo-mes').value = r.reciboMes || '';
+      $('inp-recibo-anio').value = r.reciboAnio || '';
+      updateSheet();
+      switchTab('form');
+    }
+
+    function deleteRecord(id, event) {
+      event.stopPropagation();
+      if (confirm('¿Eliminar esta planilla guardada?')) {
+        recordsHistory = recordsHistory.filter(r => r.id !== id);
+        localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+        renderHistoryList();
+      }
+    }
+
+    function renderHistoryList() {
+      const container = $('history-list');
+      const term = ($('inp-search').value || '').toLowerCase();
+      const filtered = recordsHistory.filter(r => {
+        const n = (r.nombre || '').toLowerCase();
+        const d = (r.dni || '').toLowerCase();
+        const o = (r.osNombre || '').toLowerCase();
+        return n.includes(term) || d.includes(term) || o.includes(term);
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No se encontraron registros guardados.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+      <div onclick="loadRecordIntoForm('${item.id}')" class="p-3 border border-slate-200 rounded-lg hover:border-slate-400 hover:shadow-sm cursor-pointer transition bg-slate-50/50 flex justify-between items-center group">
+        <div>
+          <div class="text-xs font-bold text-slate-800 uppercase">${item.nombre || 'Sin Nombre'}</div>
+          <div class="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5 font-mono">
+            <span>DNI: ${item.dni || '-'}</span>
+            <span>•</span>
+            <span>Fecha: ${item.fecha || '-'}</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-0.5 truncate max-w-[250px]">${item.osNombre || 'Sin OS'}</div>
+        </div>
+        <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100">
+          <button onclick="deleteRecord('${item.id}', event)" class="p-1.5 text-slate-400 hover:text-rose-600 rounded transition">
+            <i class="fa-solid fa-trash-can text-xs"></i>
           </button>
         </div>
       </div>
-    </header>
+    `).join('');
+    }
 
-    <main class="wrap">
-      <section id="panelNomenclador" class="card hidden no-print">
-        <div class="card-head">
-          <h2>Nomenclador HPGD</h2>
-          <span class="muted">Códigos disponibles</span>
-        </div>
-        <div class="card-body p-0">
-          <table class="tabla-nomenclador">
-            <thead>
-              <tr>
-                <th style="width: 160px">Código</th>
-                <th>Concepto</th>
-              </tr>
-            </thead>
-            <tbody id="tbodyNomenclador"></tbody>
-          </table>
-        </div>
-      </section>
+    function exportDataJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recordsHistory, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", `Anexo_II_Backup_${new Date().toISOString().split('T')[0]}.json`);
+      a.click();
+    }
 
-      <form id="form" class="card no-print" onsubmit="generar(event)">
-        <div class="card-head">
-          <h2>Nueva planilla</h2>
-          <span class="muted"
-            >Los campos marcados como <em>opcional</em> pueden quedar
-            vacíos</span
-          >
-        </div>
+    function importDataJSON(event) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        try {
+          const parsed = JSON.parse(e.target.result);
+          if (Array.isArray(parsed)) {
+            recordsHistory = parsed;
+            localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+            renderHistoryList();
+            alert('Datos importados correctamente.');
+          }
+        } catch (err) { alert('Error al leer archivo JSON.'); }
+      };
+      if (event.target.files[0]) reader.readAsText(event.target.files[0]);
+    }
 
-        <div class="card-body">
-          <h3 class="section-title">Obra social</h3>
-          <div class="grid">
-            <div class="field">
-              <label>Obra social</label>
-              <select id="obraSocial" required></select>
-              <div class="hint" id="rnos"></div>
-            </div>
-          </div>
+    // ═══════════════════════════════════════════════════════════
+    // DELEGACIÓN DE EVENTOS
+    // ═══════════════════════════════════════════════════════════
+    function bindFormEvents() {
+      // Inputs de texto y números
+      document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(el => {
+        if (!el.id || !el.id.startsWith('inp-')) return;
+        el.addEventListener('input', () => {
+          if (el.id === 'inp-fecha') onFechaChange();
+          else updateSheet();
+        });
+        if (el.type === 'date') {
+          el.addEventListener('change', () => {
+            if (el.id === 'inp-fecha') onFechaChange();
+            else updateSheet();
+          });
+        }
+      });
 
-          <h3 class="section-title">Datos del beneficiario</h3>
-          <div class="grid">
-            <div class="field">
-              <label
-                >Apellidos y nombres <span class="opt">opcional</span></label
-              >
-              <input
-                type="text"
-                id="nombre"
-                placeholder="FOSSATTI ROSA MARIA"
-              />
-            </div>
-            <div class="field">
-              <label>Nº de documento <span class="opt">opcional</span></label>
-              <input type="text" id="dni" placeholder="23748624" />
-            </div>
-            <div class="field">
-              <label>Tipo de beneficiario</label>
-              <select id="tipoBeneficiario">
-                <option value="">—</option>
-                <option value="TITULAR">Titular</option>
-                <option value="NO TITULAR">No titular</option>
-                <option value="ADHERENTE">Adherente</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Parentesco</label>
-              <select id="parentesco">
-                <option value="">—</option>
-                <option value="CONYUGE">Cónyuge</option>
-                <option value="HIJO">Hijo</option>
-                <option value="OTRO">Otro</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Sexo</label>
-              <select id="sexo">
-                <option value="">—</option>
-                <option value="MASC">Masculino</option>
-                <option value="FEM">Femenino</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Edad <span class="opt">opcional</span></label>
-              <input type="text" id="edad" placeholder="50" />
-            </div>
-          </div>
+      // Selects
+      document.querySelectorAll('select').forEach(el => {
+        if (!el.id) return;
+        el.addEventListener('change', () => {
+          if (el.id === 'inp-os-preset') applyOSPreset();
+          else if (el.id === 'inp-hpgd-preset') applyHpgdPreset();
+          else if (el.id.startsWith('inp-')) updateSheet();
+        });
+      });
 
-          <h3 class="section-title">Datos de la atención</h3>
-          <div class="grid">
-            <div class="field">
-              <label>Tipo de atención</label>
-              <select id="tipoAtencion">
-                <option value="">—</option>
-                <option value="CONSULTA">Consulta</option>
-                <option value="PRACTICA">Práctica</option>
-                <option value="INTERNACION">Internación</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Código HPGD</label>
-              <select id="codigoHPGD">
-                <option value="">—</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Especialidad <span class="opt">opcional</span></label>
-              <input
-                type="text"
-                id="especialidad"
-                placeholder="Se completa con el HPGD"
-              />
-            </div>
-            <div class="field hidden" id="fieldHPGDotro">
-              <label>Código propio</label>
-              <input type="text" id="codigoHPGDotro" placeholder="Ej: 2.05.1" />
-            </div>
-            <div class="field">
-              <label
-                >Diagnóstico CIE-10 <span class="opt">opcional</span></label
-              >
-              <input type="text" id="cie10" placeholder="R10.4" />
-            </div>
-            <div class="field">
-              <label>Fecha de atención</label>
-              <input type="date" id="fecha" />
-            </div>
-            <div class="field">
-              <label
-                >Último recibo — mes <span class="opt">opcional</span></label
-              >
-              <input type="text" id="mesRecibo" placeholder="8" />
-            </div>
-            <div class="field">
-              <label
-                >Último recibo — año <span class="opt">opcional</span></label
-              >
-              <input type="text" id="anioRecibo" placeholder="25" />
-            </div>
-            <div class="field">
-              <label>Nº de carnet <span class="opt">opcional</span></label>
-              <input type="text" id="carnet" placeholder="Nº de carnet" />
-            </div>
-            <div class="field">
-              <label>Fecha de emisión <span class="opt">opcional</span></label>
-              <input type="date" id="fechaEmision" />
-            </div>
-            <div class="field">
-              <label>Vencimiento <span class="opt">opcional</span></label>
-              <input type="date" id="vencimiento" />
-            </div>
-          </div>
-        </div>
+      // Checkboxes
+      document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+        if (!el.id || !el.id.startsWith('chk-')) return;
+        el.addEventListener('change', updateSheet);
+      });
+    }
 
-        <div class="card-foot">
-          <button type="button" class="btn ghost" onclick="vaciarTodo()">
-            Limpiar
-          </button>
-          <button type="submit" class="btn primary">
-            Guardar y generar PDF
-          </button>
-        </div>
-      </form>
+    // ═══════════════════════════════════════════════════════════
+    // INIT
+    // ═══════════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function () {
+      loadSavedHistory();
+      bindFormEvents();
+      updateSheet();
+      console.log('✅ Anexo II listo. Campos vinculados:', document.querySelectorAll('input, select').length);
+    });
+  </script>
+</body>
 
-      <section class="card" id="panelResumen">
-        <div class="card-head no-print">
-          <h2>Planillas cargadas</h2>
-          <div class="card-head-actions">
-            <button type="button" class="btn ghost" onclick="imprimirTodas()">
-              Imprimir todas (PDF)
-            </button>
-            <button
-              type="button"
-              class="btn danger"
-              onclick="borrarHistorial()"
-            >
-              Borrar todo
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div id="emptyResumen" class="empty no-print">
-            Todavía no cargaste ninguna planilla. Se van a ir guardando acá
-            automáticamente.
-          </div>
-          <div id="contenedorPlanillas"></div>
-        </div>
-      </section>
-    </main>
-
-    <script src="app.js"></script>
-  </body>
 </html>
