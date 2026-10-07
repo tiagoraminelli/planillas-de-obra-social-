@@ -1,563 +1,905 @@
-// ─── Catálogo de obras sociales ────────────────────────────────
-const OBRAS = [
-  { id: "PAMI",       nombre: "INSTITUTO NACIONAL DE SERVICIOS SOCIALES PARA JUBILADOS Y PENSIONADOS", rnos: "500807" },
-  { id: "OSPRERA",    nombre: "OBRA SOCIAL DEL PERSONAL RURAL Y ESTIBADORES DE LA REP. ARG.",          rnos: "119302" },
-  { id: "CAMIONEROS", nombre: "CAMIONEROS",                                                            rnos: "" },
-  { id: "OSECAC",     nombre: "OBRA SOCIAL DE LOS EMPLEADO DE COMERCIO Y ACTIVIDADES CIVILES",         rnos: "126205" },
-  { id: "OSPECON",    nombre: "OBRA SOCIAL DEL PERSONAL DE LA CONSTRUCIÓN",                            rnos: "105408" },
-  { id: "OSDOP",      nombre: "OBRA SOCIAL DE DOCENTES PARTICULARES",                                  rnos: "106302" },
-  { id: "OSFE",       nombre: "OBRA SOCIAL FERROVIARIA",                                               rnos: "001300" },
-  { id: "OSPAVIAL",   nombre: "OBRA SOCIAL PARA EL PERSONAL DE LA ACTIVIDAD VIAL",                     rnos: "122302" },
-  { id: "USUOMRA",    nombre: "OBRA SOCIAL DE LA UNION OBRERA METALURGICA DE LA REP. ARG.",            rnos: "112103" },
-  { id: "IAPOS",      nombre: "INSTITUTO AUTARQUICO PROVINCIAL DE OBRA SOCIAL",                        rnos: "" }
-];
-
-const NOMENCLADOR = [
-  { codigo: "1.01",   concepto: "CONSULTA MEDICA" },
-  { codigo: "1.01.1", concepto: "CONSULTA EN CAPAS" },
-  { codigo: "10",     concepto: "CONSULTA Y UNA PRACTICA" },
-  { codigo: "1.03",   concepto: "HASTA 3 PRACTICAS" },
-  { codigo: "1.04",   concepto: "ATENCION EN GUARDIA" },
-  { codigo: "1.05",   concepto: "ECO, RADIO, TOMO" },
-  { codigo: "1.05.1", concepto: "ERGOMETRIA" },
-  { codigo: "1.05.2", concepto: "MAMOGRAFIA, SENOGRAFIA" },
-  { codigo: "1.06",   concepto: "ECOGRAFIA" },
-  { codigo: "1.07",   concepto: "ATENCION DE URGENCIA EN GUARDIA" },
-  { codigo: "4.01",   concepto: "INTERNACION" }
-];
-
-const HOSPITAL = {
-  nombre: 'San Cristóbal "Julio César Villanueva"',
-  numero: "21.32.0557",
-  refes:  "10820912184192"
+// ═══════════════════════════════════════════════════════════
+// CATÁLOGOS
+// ═══════════════════════════════════════════════════════════
+const OS_CATALOG = {
+  pami:       { nombre: "INSTITUTO NACIONAL DE SERVICIOS SOCIALES PARA JUBILADOS Y PENSIONADOS", rnos: "500807" },
+  osprera:    { nombre: "OBRA SOCIAL DEL PERSONAL RURAL Y ESTIBADORES DE LA REP. ARG.",           rnos: "119302" },
+  camioneros: { nombre: "CAMIONEROS",                                                              rnos: "" },
+  osecac:     { nombre: "OBRA SOCIAL DE LOS EMPLEADOS DE COMERCIO Y ACTIVIDADES CIVILES",          rnos: "126205" },
+  ospecon:    { nombre: "OBRA SOCIAL DEL PERSONAL DE LA CONSTRUCCIÓN",                             rnos: "105408" },
+  osdop:      { nombre: "OBRA SOCIAL DE DOCENTES PARTICULARES",                                    rnos: "106302" },
+  osfe:       { nombre: "OBRA SOCIAL FERROVIARIA",                                                 rnos: "001300" },
+  ospavial:   { nombre: "OBRA SOCIAL PARA EL PERSONAL DE LA ACTIVIDAD VIAL",                       rnos: "122302" },
+  usuomra:    { nombre: "OBRA SOCIAL DE LA UNIÓN OBRERA METALÚRGICA DE LA REP. ARG.",              rnos: "112103" },
+  iapos:      { nombre: "INSTITUTO AUTÁRQUICO PROVINCIAL DE OBRA SOCIAL",                          rnos: "" }
 };
 
-const STORAGE_KEY = "anexo2_planillas";
+const HPGD_CATALOG = {
+  "1.01":   "CONSULTA MEDICA GENERAL",
+  "1.01.1": "CONSULTA EN CAPAS",
+  "1.02":   "CONSULTA MEDICA ESPECIALIZADA",
+  "1.03":   "HASTA 3 PRACTICAS",
+  "1.04":   "ATENCION EN GUARDIA",
+  "1.05":   "ECO, RADIO, TOMO",
+  "1.05.1": "ERGOMETRIA",
+  "1.05.2": "MAMOGRAFIA, SENOGRAFIA",
+  "1.06":   "ECOGRAFIA",
+  "1.07":   "ATENCION DE URGENCIA EN GUARDIA",
+  "2.01":   "HEMOGRAMA COMPLETO",
+  "3.05":   "RADIOGRAFIA DE TORAX",
+  "4.01":   "INTERNACION",
+  "4.10":   "ECOGRAFIA ABDOMINAL"
+};
 
-let historial = [];
-let filtro = "";
-let editandoId = null;
+let currentRecordId = null;
+let recordsHistory = [];
+let selectedIds = new Set();   // IDs seleccionados en el historial
 
-function cargarHistorial() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    historial = raw ? JSON.parse(raw) : [];
-    if (!Array.isArray(historial)) historial = [];
-  } catch { historial = []; }
-}
-function guardarHistorial() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(historial)); }
-  catch { alert("No se pudo guardar en el navegador."); }
-}
-function agregarAlHistorial(datos) {
-  historial.unshift({ id: Date.now(), datos });
-  guardarHistorial();
-  renderPlanillas();
-}
-
-function esc(s) {
-  return String(s ?? "")
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;").replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-function X(v) { return v ? "X" : ""; }
-function fechaTxt(d) {
-  if (d.fechaOriginal) return d.fechaOriginal.split("-").reverse().join("/");
-  if (d.dia) return `${d.dia}/${d.mes}/${d.anio}`;
-  return "—";
-}
-function conceptoHPGD(d) {
-  const nom = NOMENCLADOR.find(n => n.codigo === d.codigoHPGD);
-  return nom ? nom.concepto : "";
-}
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
 function $(id) { return document.getElementById(id); }
 
-// ─── Obra social ───────────────────────────────────────────────
-const selectOS = $("obraSocial");
-OBRAS.forEach(o => {
-  const opt = document.createElement("option");
-  opt.value = o.id;
-  opt.textContent = o.id + " — " + o.nombre;
-  selectOS.appendChild(opt);
-});
-selectOS.addEventListener("change", () => {
-  const o = OBRAS.find(x => x.id === selectOS.value);
-  $("rnos").textContent = o.rnos ? "RNOS: " + o.rnos : "";
-});
-selectOS.dispatchEvent(new Event("change"));
+function setText(id, value) {
+  const el = $(id);
+  if (el) el.textContent = (value == null ? '' : String(value));
+}
 
-// ─── Nomenclador ───────────────────────────────────────────────
-const selectHPGD     = $("codigoHPGD");
-const tbodyNom       = $("tbodyNomenclador");
-const fieldHPGDotro  = $("fieldHPGDotro");
-const inputHPGDotro  = $("codigoHPGDotro");
+function setCheck(id, marked) {
+  const el = $(id);
+  if (el) el.textContent = marked ? 'X' : '';
+}
 
-NOMENCLADOR.forEach(n => {
-  const opt = document.createElement("option");
-  opt.value = n.codigo;
-  opt.textContent = n.codigo + " — " + n.concepto;
-  selectHPGD.appendChild(opt);
-  const tr = document.createElement("tr");
-  tr.className = "text-gray-700";
-  tr.innerHTML = `<td class="px-5 py-2 font-mono text-xs text-gray-500">${n.codigo}</td><td class="px-5 py-2">${n.concepto}</td>`;
-  tbodyNom.appendChild(tr);
-});
+function formatDate(isoStr) {
+  if (!isoStr) return '--/--/----';
+  const p = String(isoStr).split('-');
+  if (p.length !== 3) return '--/--/----';
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
 
-const optOtro = document.createElement("option");
-optOtro.value = "__OTRO__";
-optOtro.textContent = "Otro (escribir)...";
-selectHPGD.appendChild(optOtro);
+function escapeHTML(str) {
+  return String(str == null ? '' : str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
 
-selectHPGD.addEventListener("change", () => {
-  const val = selectHPGD.value;
-  if (val === "__OTRO__") {
-    fieldHPGDotro.classList.remove("hidden");
-    $("especialidad").value = "";
-    inputHPGDotro.focus();
-  } else {
-    fieldHPGDotro.classList.add("hidden");
-    inputHPGDotro.value = "";
-    const n = NOMENCLADOR.find(x => x.codigo === val);
-    $("especialidad").value = n ? n.concepto : "";
+function calcularEdad(fechaNacISO, fechaRefISO) {
+  if (!fechaNacISO) return '';
+  const nac = new Date(fechaNacISO + 'T00:00:00');
+  if (isNaN(nac.getTime())) return '';
+  const ref = fechaRefISO ? new Date(fechaRefISO + 'T00:00:00') : new Date();
+  if (isNaN(ref.getTime())) return '';
+  let edad = ref.getFullYear() - nac.getFullYear();
+  const m = ref.getMonth() - nac.getMonth();
+  if (m < 0 || (m === 0 && ref.getDate() < nac.getDate())) edad--;
+  return edad >= 0 ? edad : '';
+}
+
+// ═══════════════════════════════════════════════════════════
+// UPDATE SHEET
+// ═══════════════════════════════════════════════════════════
+function updateSheet() {
+  setText('doc-nombre', $('inp-nombre').value);
+  setText('doc-dni', $('inp-dni').value);
+  setText('doc-edad', $('inp-edad').value);
+  setText('doc-carnet', $('inp-carnet').value);
+
+  setText('doc-refe', $('inp-refe').value);
+  setText('doc-fecha', formatDate($('inp-fecha').value));
+  setText('doc-fecha-atencion', 'FECHA: ' + formatDate($('inp-fecha').value));
+
+  setText('doc-os-nombre', $('inp-os-nombre').value);
+  setText('doc-os-rnos', $('inp-os-rnos').value);
+  setText('doc-os-emision', formatDate($('inp-os-emision').value));
+  setText('doc-os-venc', formatDate($('inp-os-venc').value));
+
+  setText('doc-codigo-hpgd', $('inp-codigo-hpgd').value);
+  setText('doc-cie10', $('inp-cie10').value);
+  setText('doc-especialidad', $('inp-especialidad').value);
+
+  setText('doc-recibo-tipo', $('inp-recibo-tipo').value);
+  setText('doc-recibo-mes', $('inp-recibo-mes').value);
+  setText('doc-recibo-anio', $('inp-recibo-anio').value);
+
+  const tipoBen = $('inp-tipo-ben').value;
+  setCheck('box-titular', tipoBen === 'Titular');
+  setCheck('box-notitular', tipoBen === 'No Titular');
+  setCheck('box-adherente', tipoBen === 'Adherente');
+
+  const parentesco = $('inp-parentesco').value;
+  setCheck('box-conyug', parentesco === 'Cónyug.');
+  setCheck('box-hijo', parentesco === 'Hijo');
+  setCheck('box-otro', parentesco === 'Otro');
+
+  const sexo = $('inp-sexo').value;
+  setCheck('box-masc', sexo === 'MASC.');
+  setCheck('box-fem', sexo === 'FEM.');
+
+  setCheck('box-consulta', $('chk-consulta').checked);
+  setCheck('box-practica', $('chk-practica').checked);
+  setCheck('box-internacion', $('chk-internacion').checked);
+}
+
+// ═══════════════════════════════════════════════════════════
+// FECHA NACIMIENTO → EDAD
+// ═══════════════════════════════════════════════════════════
+function onFechaNacChange() {
+  const nac = $('inp-fecha-nac').value;
+  if (nac) {
+    const edad = calcularEdad(nac, $('inp-fecha').value);
+    if (edad !== '') $('inp-edad').value = edad;
   }
-});
+  updateSheet();
+}
 
-// ─── Fecha por defecto ─────────────────────────────────────────
-const inputFecha = $("fecha");
-inputFecha.valueAsDate = new Date();
-inputFecha.addEventListener("change", () => {
-  if (!inputFecha.value) return;
-  const [y, m] = inputFecha.value.split("-");
-  if (!$("mesRecibo").value)  $("mesRecibo").value  = String(Number(m));
-  if (!$("anioRecibo").value) $("anioRecibo").value = String(Number(y) % 100);
-});
+// ═══════════════════════════════════════════════════════════
+// FECHA ATENCIÓN → RECIBO ANTERIOR
+// ═══════════════════════════════════════════════════════════
+function onFechaChange() {
+  const fechaStr = $('inp-fecha').value;
+  if (fechaStr) {
+    const parts = fechaStr.split('-').map(Number);
+    const y = parts[0], m = parts[1];
+    let mesAnt = m - 1, anioAnt = y;
+    if (mesAnt === 0) { mesAnt = 12; anioAnt = y - 1; }
+    $('inp-recibo-mes').value = mesAnt;
+    $('inp-recibo-anio').value = anioAnt;
+    if (!$('inp-recibo-tipo').value) $('inp-recibo-tipo').value = 'de Sueldo';
+  }
+  if ($('inp-fecha-nac').value) {
+    const edad = calcularEdad($('inp-fecha-nac').value, fechaStr);
+    if (edad !== '') $('inp-edad').value = edad;
+  }
+  updateSheet();
+}
 
-function toggleNomenclador() { $("panelNomenclador").classList.toggle("hidden"); }
-function scrollAResumen() { $("panelResumen").scrollIntoView({ behavior: "smooth", block: "start" }); }
+// ═══════════════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════════════
+function switchTab(tab) {
+  const formTab = $('tab-content-form');
+  const historyTab = $('tab-content-history');
+  const btnForm = $('tab-btn-form');
+  const btnHistory = $('tab-btn-history');
+  if (tab === 'form') {
+    formTab.classList.remove('hidden');
+    historyTab.classList.add('hidden');
+    btnForm.className = "pb-3 text-xs font-semibold border-b-2 border-slate-800 text-slate-800 flex items-center gap-2";
+    btnHistory.className = "pb-3 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+  } else {
+    formTab.classList.add('hidden');
+    historyTab.classList.remove('hidden');
+    btnHistory.className = "pb-3 text-xs font-semibold border-b-2 border-slate-800 text-slate-800 flex items-center gap-2";
+    btnForm.className = "pb-3 text-xs font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700 flex items-center gap-2";
+    renderHistoryList();
+  }
+}
 
-// ─── Leer formulario ───────────────────────────────────────────
-function leerFormulario() {
-  const fecha = inputFecha.value;
-  let dia = "", mes = "", anio = "";
-  if (fecha) { const p = fecha.split("-"); anio = Number(p[0]); mes = Number(p[1]); dia = Number(p[2]); }
-  let codigoHPGD = selectHPGD.value;
-  if (codigoHPGD === "__OTRO__") codigoHPGD = inputHPGDotro.value.trim();
+// ═══════════════════════════════════════════════════════════
+// CATÁLOGOS RÁPIDOS
+// ═══════════════════════════════════════════════════════════
+function applyOSPreset() {
+  const val = $('inp-os-preset').value;
+  if (val && OS_CATALOG[val]) {
+    $('inp-os-nombre').value = OS_CATALOG[val].nombre;
+    $('inp-os-rnos').value = OS_CATALOG[val].rnos;
+    updateSheet();
+  }
+}
+
+function applyHpgdPreset() {
+  const val = $('inp-hpgd-preset').value;
+  if (val && HPGD_CATALOG[val]) {
+    $('inp-codigo-hpgd').value = val;
+    $('inp-especialidad').value = HPGD_CATALOG[val];
+    updateSheet();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RESET / NUEVO
+// ═══════════════════════════════════════════════════════════
+function resetForm() {
+  currentRecordId = null;
+  ['inp-nombre','inp-dni','inp-edad','inp-fecha-nac','inp-carnet',
+   'inp-tipo-ben','inp-parentesco','inp-sexo',
+   'inp-os-preset','inp-os-nombre','inp-os-rnos','inp-os-emision','inp-os-venc',
+   'inp-fecha','inp-refe',
+   'inp-hpgd-preset','inp-codigo-hpgd','inp-cie10','inp-especialidad',
+   'inp-recibo-tipo','inp-recibo-mes','inp-recibo-anio'
+  ].forEach(id => { if ($(id)) $(id).value = ''; });
+  ['chk-consulta','chk-practica','chk-internacion'].forEach(id => { if ($(id)) $(id).checked = false; });
+  updateSheet();
+}
+
+function createNewSheet() {
+  resetForm();
+  switchTab('form');
+}
+
+// ═══════════════════════════════════════════════════════════
+// LOCAL STORAGE
+// ═══════════════════════════════════════════════════════════
+function getFormData() {
   return {
-    obraSocialId:     selectOS.value,
-    nombre:           $("nombre").value.trim().toUpperCase(),
-    dni:              $("dni").value.trim(),
-    tipoBeneficiario: $("tipoBeneficiario").value,
-    parentesco:       $("parentesco").value,
-    sexo:             $("sexo").value,
-    edad:             $("edad").value.trim(),
-    tipoAtencion:     $("tipoAtencion").value,
-    codigoHPGD,
-    especialidad:     $("especialidad").value.trim().toUpperCase(),
-    cie10:            $("cie10").value.trim().toUpperCase(),
-    dia, mes, anio,
-    fechaOriginal:    fecha,
-    mesRecibo:        $("mesRecibo").value.trim(),
-    anioRecibo:       $("anioRecibo").value.trim()
+    id: currentRecordId || Date.now().toString(),
+    createdAt: new Date().toISOString(),
+    nombre: $('inp-nombre').value,
+    dni: $('inp-dni').value,
+    edad: $('inp-edad').value,
+    fechaNac: $('inp-fecha-nac').value,
+    carnet: $('inp-carnet').value,
+    tipoBen: $('inp-tipo-ben').value,
+    parentesco: $('inp-parentesco').value,
+    sexo: $('inp-sexo').value,
+    osNombre: $('inp-os-nombre').value,
+    osRnos: $('inp-os-rnos').value,
+    osEmision: $('inp-os-emision').value,
+    osVenc: $('inp-os-venc').value,
+    fecha: $('inp-fecha').value,
+    refe: $('inp-refe').value,
+    chkConsulta: $('chk-consulta').checked,
+    chkPractica: $('chk-practica').checked,
+    chkInternacion: $('chk-internacion').checked,
+    codigoHpgd: $('inp-codigo-hpgd').value,
+    cie10: $('inp-cie10').value,
+    especialidad: $('inp-especialidad').value,
+    reciboTipo: $('inp-recibo-tipo').value,
+    reciboMes: $('inp-recibo-mes').value,
+    reciboAnio: $('inp-recibo-anio').value
   };
 }
 
-// ─── Generar / Actualizar ─────────────────────────────────────
-function generar(e) {
-  e.preventDefault();
-  const datos = leerFormulario();
+function saveCurrentSheet() {
+  const data = getFormData();
+  const idx = recordsHistory.findIndex(r => r.id === data.id);
+  if (idx >= 0) recordsHistory[idx] = data;
+  else { recordsHistory.unshift(data); currentRecordId = data.id; }
+  localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+  alert('Planilla guardada exitosamente.');
+}
 
-  if (editandoId) {
-    const item = historial.find(x => x.id === editandoId);
-    if (item) { item.datos = datos; guardarHistorial(); renderPlanillas(); }
-    salirDeEdicion();
-    limpiarCamposVariables();
-    scrollAResumen();
+function loadSavedHistory() {
+  const raw = localStorage.getItem('anexo_ii_records');
+  if (raw) { try { recordsHistory = JSON.parse(raw); } catch (e) { recordsHistory = []; } }
+}
+
+function loadRecordIntoForm(id) {
+  const r = recordsHistory.find(x => x.id === id);
+  if (!r) return;
+  currentRecordId = r.id;
+  $('inp-nombre').value = r.nombre || '';
+  $('inp-dni').value = r.dni || '';
+  $('inp-edad').value = r.edad || '';
+  $('inp-fecha-nac').value = r.fechaNac || '';
+  $('inp-carnet').value = r.carnet || '';
+  $('inp-tipo-ben').value = r.tipoBen || '';
+  $('inp-parentesco').value = r.parentesco || '';
+  $('inp-sexo').value = r.sexo || '';
+  $('inp-os-nombre').value = r.osNombre || '';
+  $('inp-os-rnos').value = r.osRnos || '';
+  $('inp-os-emision').value = r.osEmision || '';
+  $('inp-os-venc').value = r.osVenc || '';
+  $('inp-fecha').value = r.fecha || '';
+  $('inp-refe').value = r.refe || '';
+  $('chk-consulta').checked = !!r.chkConsulta;
+  $('chk-practica').checked = !!r.chkPractica;
+  $('chk-internacion').checked = !!r.chkInternacion;
+  $('inp-codigo-hpgd').value = r.codigoHpgd || '';
+  $('inp-cie10').value = r.cie10 || '';
+  $('inp-especialidad').value = r.especialidad || '';
+  $('inp-recibo-tipo').value = r.reciboTipo || '';
+  $('inp-recibo-mes').value = r.reciboMes || '';
+  $('inp-recibo-anio').value = r.reciboAnio || '';
+  updateSheet();
+  switchTab('form');
+}
+
+function deleteRecord(id, event) {
+  if (event) event.stopPropagation();
+  if (confirm('¿Eliminar esta planilla guardada?')) {
+    recordsHistory = recordsHistory.filter(r => r.id !== id);
+    selectedIds.delete(id);
+    localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+    renderHistoryList();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// SELECCIÓN MÚLTIPLE EN EL HISTORIAL
+// ═══════════════════════════════════════════════════════════
+function toggleSelect(id, checked) {
+  if (checked) selectedIds.add(id);
+  else selectedIds.delete(id);
+  updateHistoryActions();
+}
+
+function toggleSelectAll(checked) {
+  if (checked) {
+    recordsHistory.forEach(r => selectedIds.add(r.id));
+  } else {
+    selectedIds.clear();
+  }
+  renderHistoryList();
+}
+
+function updateHistoryActions() {
+  const count = selectedIds.size;
+  const countEl = $('history-selected-count');
+  if (countEl) countEl.textContent = `${count} seleccionado${count === 1 ? '' : 's'}`;
+
+  const btnDel = $('btn-delete-selected');
+  if (btnDel) btnDel.disabled = count === 0;
+
+  const chkAll = $('chk-select-all');
+  if (chkAll) {
+    chkAll.checked = recordsHistory.length > 0 && count === recordsHistory.length;
+    chkAll.indeterminate = count > 0 && count < recordsHistory.length;
+  }
+}
+
+function borrarSeleccionados() {
+  if (selectedIds.size === 0) return;
+  if (!confirm(`¿Eliminar ${selectedIds.size} planilla(s) seleccionada(s)?`)) return;
+  recordsHistory = recordsHistory.filter(r => !selectedIds.has(r.id));
+  selectedIds.clear();
+  localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+  renderHistoryList();
+}
+
+function borrarTodos() {
+  if (recordsHistory.length === 0) {
+    alert('No hay planillas para eliminar.');
+    return;
+  }
+  if (!confirm(`¿Eliminar TODAS las planillas (${recordsHistory.length})? Esta acción no se puede deshacer.`)) return;
+  recordsHistory = [];
+  selectedIds.clear();
+  localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+  renderHistoryList();
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════════════════════
+function renderHistoryList() {
+  const container = $('history-list');
+  const term = ($('inp-search').value || '').toLowerCase();
+  const filtered = recordsHistory.filter(r => {
+    const n = (r.nombre || '').toLowerCase();
+    const d = (r.dni || '').toLowerCase();
+    const o = (r.osNombre || '').toLowerCase();
+    return n.includes(term) || d.includes(term) || o.includes(term);
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="text-center py-8 text-slate-400 text-xs">No se encontraron registros guardados.</div>`;
+    updateHistoryActions();
     return;
   }
 
-  agregarAlHistorial(datos);
-  setTimeout(() => {
-    const primera = document.querySelector("#contenedorPlanillas .planilla");
-    if (!primera) return;
-    document.body.classList.add("print-single");
-    document.querySelectorAll(".planilla").forEach(p => p.classList.remove("print-target"));
-    primera.classList.add("print-target");
-    window.print();
-    setTimeout(() => {
-      document.body.classList.remove("print-single");
-      document.querySelectorAll(".planilla").forEach(p => p.classList.remove("print-target"));
-    }, 300);
-  }, 100);
-  limpiarCamposVariables();
+  container.innerHTML = filtered.map(item => {
+    const isSelected = selectedIds.has(item.id);
+    return `
+    <div class="p-3 border ${isSelected ? 'border-slate-800 bg-slate-100' : 'border-slate-200 bg-slate-50/50'} rounded-lg hover:border-slate-400 hover:shadow-sm transition flex justify-between items-center group">
+      <div class="flex items-center gap-3 flex-1 min-w-0">
+        <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect('${item.id}', this.checked)"
+               class="rounded border-slate-300 text-slate-800 focus:ring-slate-800 flex-shrink-0 cursor-pointer"
+               onclick="event.stopPropagation()">
+        <div class="flex-1 min-w-0 cursor-pointer" onclick="loadRecordIntoForm('${item.id}')">
+          <div class="text-xs font-bold text-slate-800 uppercase truncate">${escapeHTML(item.nombre || 'Sin Nombre')}</div>
+          <div class="text-[10px] text-slate-500 flex items-center gap-2 mt-0.5 font-mono">
+            <span>DNI: ${escapeHTML(item.dni || '-')}</span>
+            <span>•</span>
+            <span>Fecha: ${escapeHTML(item.fecha || '-')}</span>
+          </div>
+          <div class="text-[10px] text-slate-400 mt-0.5 truncate">${escapeHTML(item.osNombre || 'Sin OS')}</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 flex-shrink-0">
+        <button onclick="guardarPDFGuardada('${item.id}', event)" title="Guardar como PDF"
+                class="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-200 rounded transition">
+          <i class="fa-solid fa-file-pdf text-xs"></i>
+        </button>
+        <button onclick="deleteRecord('${item.id}', event)" title="Eliminar"
+                class="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded transition">
+          <i class="fa-solid fa-trash-can text-xs"></i>
+        </button>
+      </div>
+    </div>
+  `;
+  }).join('');
+
+  updateHistoryActions();
 }
 
-function limpiarCamposVariables() {
-  ["nombre","dni","edad","especialidad","cie10","mesRecibo","anioRecibo","codigoHPGDotro"]
-    .forEach(id => $(id).value = "");
-  ["tipoBeneficiario","parentesco","sexo","tipoAtencion","codigoHPGD"]
-    .forEach(id => $(id).value = "");
-  fieldHPGDotro.classList.add("hidden");
-  inputFecha.valueAsDate = new Date();
-  const hoy = new Date();
-  $("mesRecibo").value  = String(hoy.getMonth() + 1);
-  $("anioRecibo").value = String(hoy.getFullYear() % 100);
+function exportDataJSON() {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(recordsHistory, null, 2));
+  const a = document.createElement('a');
+  a.setAttribute("href", dataStr);
+  a.setAttribute("download", `Anexo_II_Backup_${new Date().toISOString().split('T')[0]}.json`);
+  a.click();
 }
 
-function vaciarTodo() {
-  $("form").reset();
-  fieldHPGDotro.classList.add("hidden");
-  selectOS.dispatchEvent(new Event("change"));
-  salirDeEdicion();
+function importDataJSON(event) {
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (Array.isArray(parsed)) {
+        recordsHistory = parsed;
+        selectedIds.clear();
+        localStorage.setItem('anexo_ii_records', JSON.stringify(recordsHistory));
+        renderHistoryList();
+        alert('Datos importados correctamente.');
+      }
+    } catch (err) { alert('Error al leer archivo JSON.'); }
+  };
+  if (event.target.files[0]) reader.readAsText(event.target.files[0]);
 }
 
-// ─── Edición ──────────────────────────────────────────────────
-function editarPlanilla(id) {
-  const item = historial.find(x => x.id === id);
-  if (!item) return;
-  const d = item.datos;
+// ═══════════════════════════════════════════════════════════
+// NOMBRE DEL PDF
+// ═══════════════════════════════════════════════════════════
+function generarNombrePDF(data) {
+  if (!data || typeof data !== 'object') return 'ANEXO_II';
 
-  selectOS.value = d.obraSocialId || OBRAS[0].id;
-  selectOS.dispatchEvent(new Event("change"));
-  $("nombre").value           = d.nombre || "";
-  $("dni").value              = d.dni || "";
-  $("tipoBeneficiario").value = d.tipoBeneficiario || "";
-  $("parentesco").value       = d.parentesco || "";
-  $("sexo").value             = d.sexo || "";
-  $("edad").value             = d.edad || "";
-  $("tipoAtencion").value     = d.tipoAtencion || "";
-  $("especialidad").value     = d.especialidad || "";
-  $("cie10").value            = d.cie10 || "";
-  inputFecha.value            = d.fechaOriginal || "";
-  $("mesRecibo").value        = d.mesRecibo || "";
-  $("anioRecibo").value       = d.anioRecibo || "";
-
-  if (d.codigoHPGD && NOMENCLADOR.some(n => n.codigo === d.codigoHPGD)) {
-    selectHPGD.value = d.codigoHPGD;
-    fieldHPGDotro.classList.add("hidden");
-    inputHPGDotro.value = "";
-  } else if (d.codigoHPGD) {
-    selectHPGD.value = "__OTRO__";
-    fieldHPGDotro.classList.remove("hidden");
-    inputHPGDotro.value = d.codigoHPGD;
-  } else {
-    selectHPGD.value = "";
-    fieldHPGDotro.classList.add("hidden");
-    inputHPGDotro.value = "";
+  let os = '';
+  if (data.obraSocialId && OS_CATALOG[data.obraSocialId]) {
+    os = data.obraSocialId.toUpperCase();
+  } else if (data.osNombre) {
+    os = String(data.osNombre)
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^A-Z0-9\s]/gi, '')
+      .trim().split(/\s+/)[0].toUpperCase();
   }
 
-  editandoId = id;
-  updateEditUI();
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-function salirDeEdicion() { editandoId = null; updateEditUI(); }
-function updateEditUI() {
-  const activo = editandoId !== null;
-  $("btnGuardarTxt").textContent = activo ? "Actualizar planilla" : "Guardar y generar PDF";
-  $("btnCancelarEdicion").classList.toggle("hidden", !activo);
-}
-function duplicarPlanilla(id) {
-  const idx = historial.findIndex(x => x.id === id);
-  if (idx === -1) return;
-  const copia = JSON.parse(JSON.stringify(historial[idx].datos));
-  historial.splice(idx + 1, 0, { id: Date.now(), datos: copia });
-  guardarHistorial();
-  renderPlanillas();
+  let dia = '', mes = '', anio = '';
+  if (data.fecha) {
+    const p = String(data.fecha).split('-');
+    if (p.length === 3) { anio = p[0]; mes = p[1]; dia = p[2]; }
+  }
+
+  const partes = ['ANEXO'];
+  if (os) partes.push(os);
+  if (dia) partes.push(dia);
+  if (mes) partes.push(mes);
+  if (anio) partes.push(anio);
+  if (data.dni) partes.push(String(data.dni).replace(/\D/g, ''));
+
+  return partes.join('_') || 'ANEXO_II';
 }
 
-function htmlPlanilla(d, item) {
-  const os = OBRAS.find(o => o.id === d.obraSocialId);
-  const concepto = conceptoHPGD(d);
+// ═══════════════════════════════════════════════════════════
+// MENÚ DESPLEGABLE
+// ═══════════════════════════════════════════════════════════
+function togglePrintMenu(e) {
+  if (e) e.stopPropagation();
+  const menu = $('print-menu');
+  if (menu) menu.classList.toggle('hidden');
+}
+
+document.addEventListener('click', function (e) {
+  const wrapper = $('print-menu-wrapper');
+  const menu = $('print-menu');
+  if (!menu || menu.classList.contains('hidden')) return;
+  if (wrapper && !wrapper.contains(e.target)) menu.classList.add('hidden');
+});
+
+// ═══════════════════════════════════════════════════════════
+// OVERLAY DE PROGRESO
+// ═══════════════════════════════════════════════════════════
+function showOverlay(texto, sub) {
+  const ov = $('pdf-overlay');
+  if (!ov) return;
+  $('pdf-overlay-text').textContent = texto || 'Generando PDF...';
+  $('pdf-overlay-sub').textContent = sub || '';
+  ov.classList.remove('hidden');
+}
+
+function hideOverlay() {
+  const ov = $('pdf-overlay');
+  if (ov) ov.classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════
+// GENERAR PDF DESDE UN ELEMENTO DEL DOM
+// ═══════════════════════════════════════════════════════════
+async function generarPDFDesdeElemento(elemento, nombreArchivo) {
+  const { jsPDF } = window.jspdf;
+
+  const canvas = await html2canvas(elemento, {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    logging: false,
+    windowWidth: elemento.scrollWidth,
+    windowHeight: elemento.scrollHeight
+  });
+
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+  if (imgHeight <= pageHeight) {
+    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+  } else {
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+  }
+
+  pdf.save(nombreArchivo + '.pdf');
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUARDAR PDF ACTUAL
+// ═══════════════════════════════════════════════════════════
+async function guardarPDFActual() {
+  const menu = $('print-menu');
+  if (menu) menu.classList.add('hidden');
+
+  const data = getFormData();
+  const nombre = generarNombrePDF({
+    obraSocialId: $('inp-os-preset').value || '',
+    osNombre: data.osNombre,
+    fecha: data.fecha,
+    dni: data.dni
+  });
+
+  showOverlay('Generando PDF...', nombre + '.pdf');
+
+  try {
+    await generarPDFDesdeElemento($('printable-area'), nombre);
+  } catch (err) {
+    console.error(err);
+    alert('Error al generar el PDF: ' + err.message);
+  } finally {
+    hideOverlay();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUARDAR TODAS EN PDF
+// ═══════════════════════════════════════════════════════════
+async function guardarPDFTodas() {
+  const menu = $('print-menu');
+  if (menu) menu.classList.add('hidden');
+
+  if (recordsHistory.length === 0) {
+    alert('No hay planillas guardadas para exportar. Guardá al menos una.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const cont = $('pdf-render-container');
+  cont.innerHTML = '';
+
+  const hoy = new Date();
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const yyyy = hoy.getFullYear();
+  const nombreArchivo = `ANEXO_TODAS_${dd}_${mm}_${yyyy}`;
+
+  showOverlay('Generando PDF...', `0 / ${recordsHistory.length} planillas`);
+
+  try {
+    const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    const pageWidth = 210;
+    const pageHeight = 297;
+
+    for (let i = 0; i < recordsHistory.length; i++) {
+      const subEl = $('pdf-overlay-sub');
+      if (subEl) subEl.textContent = `${i + 1} / ${recordsHistory.length} planillas`;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.width = '210mm';
+      wrapper.style.background = '#ffffff';
+      wrapper.innerHTML = hojaHTML(recordsHistory[i].datos);
+      cont.appendChild(wrapper);
+
+      await new Promise(r => setTimeout(r, 80));
+
+      const canvas = await html2canvas(wrapper, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const imgWidth = pageWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      if (i > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, Math.min(imgHeight, pageHeight));
+
+      cont.innerHTML = '';
+    }
+
+    pdf.save(nombreArchivo + '.pdf');
+  } catch (err) {
+    console.error(err);
+    alert('Error al generar el PDF: ' + err.message);
+  } finally {
+    hideOverlay();
+    cont.innerHTML = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// GUARDAR PDF DE UNA PLANILLA GUARDADA
+// ═══════════════════════════════════════════════════════════
+async function guardarPDFGuardada(id, event) {
+  if (event) { event.stopPropagation(); event.preventDefault(); }
+
+  const item = recordsHistory.find(x => x.id === id);
+  if (!item) {
+    alert('No se encontró la planilla.');
+    return;
+  }
+
+  const cont = $('pdf-render-container');
+  if (!cont) {
+    alert('No se encontró el contenedor de renderizado.');
+    return;
+  }
+
+  cont.innerHTML = '';
+
+  const wrapper = document.createElement('div');
+  wrapper.style.width = '210mm';
+  wrapper.style.background = '#ffffff';
+  wrapper.innerHTML = hojaHTML(item.datos);
+  cont.appendChild(wrapper);
+
+  // Esperar a que se rendericen las imágenes
+  await new Promise(r => setTimeout(r, 150));
+
+  const nombre = generarNombrePDF(item.datos);
+  showOverlay('Generando PDF...', nombre + '.pdf');
+
+  try {
+    await generarPDFDesdeElemento(wrapper, nombre);
+  } catch (err) {
+    console.error(err);
+    alert('Error al generar el PDF: ' + err.message);
+  } finally {
+    hideOverlay();
+    cont.innerHTML = '';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// HTML DE UNA HOJA A PARTIR DE UN OBJETO DE DATOS
+// ═══════════════════════════════════════════════════════════
+function hojaHTML(d) {
+  // Guardas contra undefined
+  d = d || {};
+  const os = Object.values(OS_CATALOG).find(o => o.nombre === d.osNombre) || { nombre: d.osNombre || '', rnos: d.osRnos || '' };
+
+  const chk = (cond) => cond ? 'X' : '';
+  const fmt = (iso) => {
+    if (!iso) return '--/--/----';
+    const p = String(iso).split('-');
+    if (p.length !== 3) return '--/--/----';
+    return p[2] + '/' + p[1] + '/' + p[0];
+  };
 
   return `
-  <div class="planilla px-6 py-8 border-t border-gray-100" data-id="${item ? item.id : ""}">
-    ${item ? `
-      <div class="planilla-acciones no-print flex justify-end gap-1 flex-wrap mb-5">
-        <button type="button" onclick="editarPlanilla(${item.id})" class="px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded">Editar</button>
-        <button type="button" onclick="duplicarPlanilla(${item.id})" class="px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded">Duplicar</button>
-        <button type="button" onclick="imprimirPlanilla(${item.id})" class="px-2.5 py-1 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded">Imprimir PDF</button>
-        <button type="button" class="danger px-2.5 py-1 text-xs font-medium text-red-700 hover:bg-red-50 rounded" onclick="eliminarDelHistorial(${item.id})">Eliminar</button>
-      </div>` : ""}
+  <div class="hoja-a4" style="margin-bottom: 0;">
+    <div class="flex justify-between items-start border-b-2 border-slate-900 pb-2">
+      <div>
+        <span class="text-[10px] font-black tracking-widest text-slate-500 uppercase block">ANEXO II</span>
+        <h2 class="text-sm font-extrabold text-slate-900 tracking-tight leading-snug">COMPROBANTE DE ATENCIÓN DE BENEFICIARIOS Y OBRAS SOCIALES</h2>
+      </div>
+      <div class="text-right flex flex-col items-end">
+        <img src="santa fe.webp" alt="Santa Fe" class="w-14 h-auto mb-0.5">
+        <span class="text-[9px] uppercase font-bold text-slate-700 tracking-wide">Hospital San Cristóbal</span>
+      </div>
+    </div>
 
-    <table class="tabla-anexo mx-auto max-w-[780px]">
-      <colgroup>
-        <col style="width:13%"><col style="width:9%"><col style="width:9%">
-        <col style="width:9%"><col style="width:8%"><col style="width:8%">
-        <col style="width:9%"><col style="width:9%"><col style="width:9%">
-        <col style="width:8%"><col style="width:5%"><col style="width:4%">
-      </colgroup>
+    <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[10px] mt-2">
+      <div class="col-span-8 border-r border-slate-900">
+        <div class="p-2 border-b border-slate-900">
+          <span class="text-[8px] font-bold uppercase text-slate-500 block">HOSPITAL</span>
+        </div>
+        <div class="p-2 flex items-center justify-center">
+          <span class="font-bold text-sm text-slate-900">San Cristóbal "Julio César Villanueva"</span>
+        </div>
+      </div>
+      <div class="col-span-4 flex flex-col bg-slate-50 print-bg-slate">
+        <div class="p-1.5 text-center border-b border-slate-900">
+          <span class="text-[8px] font-bold text-slate-600 uppercase">CODIGO HPGD </span>
+          <span class="font-mono font-bold text-slate-900">21.32.0557</span>
+        </div>
+        <div class="p-1.5 text-center border-b border-slate-900">
+          <span class="text-[8px] font-bold text-slate-600 uppercase block">REFES</span>
+          <span class="font-mono font-bold text-slate-900 text-[10px]">10820912184192</span>
+        </div>
+        <div class="p-1.5 flex flex-col justify-center flex-grow">
+          <div class="flex justify-between items-center text-[9px]">
+            <span class="font-bold text-slate-600 uppercase">FECHA:</span>
+            <span class="font-mono font-bold text-slate-900">${fmt(d.fecha)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-      <tr><td class="titulo-anexo" colspan="12">Anexo II</td></tr>
+    <div class="border border-slate-900 border-t-0 text-[10px] flex flex-col mt-2 flex-grow">
+      <div class="bg-slate-100 print-bg-slate p-1 text-center font-bold text-[9px] tracking-wider uppercase border-b border-slate-900">
+        DATOS DEL BENEFICIARIO
+      </div>
+      <div class="grid grid-cols-12 flex-grow">
+        <div class="col-span-8 p-2 border-r border-slate-900 flex flex-col justify-center">
+          <span class="text-[8px] font-bold text-slate-500 uppercase block">APELLIDO Y NOMBRE</span>
+          <span class="font-bold text-sm text-slate-900 uppercase tracking-wide mt-1">${escapeHTML(d.nombre || '')}</span>
+        </div>
+        <div class="col-span-4 p-2 flex flex-col justify-center">
+          <span class="text-[8px] font-bold text-slate-500 uppercase block">N° DE DOCUMENTO:</span>
+          <span class="font-mono font-bold text-sm text-slate-900 mt-1">${escapeHTML(d.dni || '')}</span>
+        </div>
+      </div>
+    </div>
 
-      <!-- Fila 1: Comprobante | FECHA -->
-      <tr>
-        <td class="label" colspan="8">COMPROBANTE DE ATENCION</td>
-        <td class="label centro" colspan="4">FECHA</td>
-      </tr>
-      <tr>
-        <td class="label" colspan="8">DE BENEFICIARIOS DE OBRAS SOCIALES</td>
-        <td class="valor centro">${esc(d.dia || "")}</td>
-        <td class="valor centro">${esc(d.mes || "")}</td>
-        <td class="valor centro" colspan="2">${esc(d.anio || "")}</td>
-      </tr>
+    <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[9px] mt-2 flex-grow">
+      <div class="col-span-4 border-r border-slate-900 p-2 flex flex-col justify-center">
+        <span class="font-bold uppercase text-slate-600 block mb-1.5">TIPO DE BENEFICIARIO</span>
+        <div class="flex justify-between items-center px-0.5">
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.tipoBen === 'Titular')}</span><span>Titular</span></label>
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.tipoBen === 'No Titular')}</span><span>No Titular</span></label>
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.tipoBen === 'Adherente')}</span><span>Adhere.</span></label>
+        </div>
+      </div>
+      <div class="col-span-4 border-r border-slate-900 p-2 flex flex-col justify-center">
+        <span class="font-bold uppercase text-slate-600 block mb-1.5">PARENTESCO</span>
+        <div class="flex justify-between items-center px-0.5">
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.parentesco === 'Cónyug.')}</span><span>Cónyug.</span></label>
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.parentesco === 'Hijo')}</span><span>Hijo</span></label>
+          <label class="flex items-center space-x-1"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.parentesco === 'Otro')}</span><span>Otro</span></label>
+        </div>
+      </div>
+      <div class="col-span-2 border-r border-slate-900 p-2 flex flex-col justify-center">
+        <span class="font-bold uppercase text-slate-600 block mb-1.5">SEXO</span>
+        <div class="flex justify-around items-center">
+          <label class="flex items-center space-x-0.5"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.sexo === 'MASC.')}</span><span>M.</span></label>
+          <label class="flex items-center space-x-0.5"><span class="check-box w-4 h-4 border border-slate-900">${chk(d.sexo === 'FEM.')}</span><span>F.</span></label>
+        </div>
+      </div>
+      <div class="col-span-2 p-2 text-center flex flex-col justify-center">
+        <span class="font-bold uppercase text-slate-600 block mb-1.5">EDAD</span>
+        <span class="font-mono font-bold text-sm text-slate-900">${escapeHTML(d.edad || '')}</span>
+      </div>
+    </div>
 
-      <!-- Fila 3-4: Hospital + Nº + REFES -->
-      <tr>
-        <td class="label" colspan="8">HOSPITAL</td>
-        <td class="label centro" colspan="4">Nº ${esc(HOSPITAL.numero)}</td>
-      </tr>
-      <tr>
-        <td class="valor-grande centro" colspan="8">${esc(HOSPITAL.nombre)}</td>
-        <td class="label centro" colspan="2">REFES</td>
-        <td class="valor centro" colspan="2">${esc(HOSPITAL.refes)}</td>
-      </tr>
+    <div class="border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow flex flex-col">
+      <div class="bg-slate-100 print-bg-slate p-1 text-center font-bold text-[9px] tracking-wider uppercase border-b border-slate-900 flex justify-between px-3">
+        <span>TIPO DE ATENCIÓN Y PRESTACIÓN HPGD</span>
+        <span class="font-mono">FECHA: ${fmt(d.fecha)}</span>
+      </div>
+      <div class="grid grid-cols-12 divide-x divide-slate-900 flex-grow">
+        <div class="col-span-4 p-2 flex flex-col justify-center gap-2 bg-slate-50/50">
+          <div class="flex items-center justify-between"><span class="text-[10px] font-semibold text-slate-700">• CONSULTA</span><span class="check-box w-4 h-4 border border-slate-900 text-[11px]">${chk(d.chkConsulta)}</span></div>
+          <div class="flex items-center justify-between"><span class="text-[10px] font-semibold text-slate-700">• PRÁCTICA</span><span class="check-box w-4 h-4 border border-slate-900 text-[11px]">${chk(d.chkPractica)}</span></div>
+          <div class="flex items-center justify-between"><span class="text-[10px] font-semibold text-slate-700">• INTERNACIÓN</span><span class="check-box w-4 h-4 border border-slate-900 text-[11px]">${chk(d.chkInternacion)}</span></div>
+        </div>
+        <div class="col-span-8 divide-y divide-slate-900">
+          <div class="p-2 flex justify-between items-center"><span class="text-[9px] font-bold text-slate-500 uppercase">ESPECIALIDAD:</span><span class="font-bold text-slate-900 uppercase">${escapeHTML(d.especialidad || '')}</span></div>
+          <div class="p-2 flex justify-between items-center"><span class="text-[9px] font-bold text-slate-500 uppercase">CÓDIGO n. HPGD:</span><span class="font-mono font-bold text-slate-900">${escapeHTML(d.codigoHpgd || '')}</span></div>
+          <div class="p-2 flex justify-between items-center"><span class="text-[9px] font-bold text-slate-500 uppercase">DIAGNÓSTICO CIE 10:</span><span class="font-mono font-bold text-slate-900">${escapeHTML(d.cie10 || '')}</span></div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Fila 5: DATOS DEL BENEFICIARIO -->
-      <tr><td class="seccion" colspan="12">DATOS DEL BENEFICIARIO</td></tr>
+    <div class="grid grid-cols-12 border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow">
+      <div class="col-span-7 p-2 border-r border-slate-900 flex flex-col justify-between">
+        <span class="text-[9px] font-bold uppercase text-slate-500">CERTIFICACIÓN MÉDICA</span>
+        <div class="text-center my-auto opacity-30 italic text-[10px] text-slate-400">[ Firma del Médico y Sello con N° de Matrícula ]</div>
+        <div class="border-t border-dashed border-slate-400 pt-0.5 text-center text-[8px] text-slate-600">Firma del Médico y Sello con N° de Matrícula</div>
+      </div>
+      <div class="col-span-5 flex flex-col">
+        <div class="grid grid-cols-3 border-b border-slate-900 bg-slate-100 print-bg-slate">
+          <div class="p-1 text-center font-bold text-[8px] tracking-wider uppercase border-r border-slate-900 col-span-1 flex items-center justify-center">Último Recibo</div>
+          <div class="p-1 text-center font-bold text-[9px] tracking-wider uppercase border-r border-slate-900">MES</div>
+          <div class="p-1 text-center font-bold text-[9px] tracking-wider uppercase">AÑO</div>
+        </div>
+        <div class="grid grid-cols-3 flex-grow">
+          <div class="p-1 text-center text-[9px] border-r border-slate-900 flex items-center justify-center">de Sueldo</div>
+          <div class="p-1 text-center border-r border-slate-900 flex items-center justify-center"><span class="font-mono font-bold text-sm text-slate-900">${escapeHTML(d.reciboMes || '')}</span></div>
+          <div class="p-1 text-center flex items-center justify-center"><span class="font-mono font-bold text-sm text-slate-900">${escapeHTML(d.reciboAnio || '')}</span></div>
+        </div>
+      </div>
+    </div>
 
-      <!-- Fila 6-7: Apellidos | Documento -->
-      <tr>
-        <td class="label" colspan="8">APELLIDOS Y NOMBRES</td>
-        <td class="label centro" colspan="4">Nº De Documento</td>
-      </tr>
-      <tr>
-        <td class="valor-grande centro" colspan="8">${esc(d.nombre || "")}</td>
-        <td class="valor centro" colspan="4">${esc(d.dni || "")}</td>
-      </tr>
+    <div class="border border-slate-900 border-t-0 text-[10px] mt-2 flex-grow flex flex-col">
+      <div class="grid grid-cols-12 border-b border-slate-900 flex-grow">
+        <div class="col-span-9 p-2 border-r border-slate-900 flex flex-col justify-center">
+          <span class="text-[8px] font-bold text-slate-500 uppercase block">DATOS DE LA OBRA SOCIAL: Nombre Completo</span>
+          <span class="font-bold text-slate-900 uppercase mt-0.5">${escapeHTML(os.nombre || '')}</span>
+        </div>
+        <div class="col-span-3 p-2 bg-slate-50 print-bg-slate flex flex-col justify-center">
+          <span class="text-[8px] font-bold text-slate-500 uppercase block">RNOS</span>
+          <span class="font-mono font-bold text-slate-900 text-xs mt-0.5">${escapeHTML(os.rnos || d.osRnos || '')}</span>
+        </div>
+      </div>
+      <div class="grid grid-cols-3 divide-x divide-slate-900 text-center text-[9px] flex-grow">
+        <div class="p-2 flex flex-col justify-center"><span class="text-[7px] font-bold text-slate-500 uppercase block">N° DE CARNET</span><span class="font-mono font-bold text-slate-900 mt-0.5">${escapeHTML(d.carnet || '')}</span></div>
+        <div class="p-2 flex flex-col justify-center"><span class="text-[7px] font-bold text-slate-500 uppercase block">FECHA DE EMISIÓN</span><span class="font-mono font-bold text-slate-900 mt-0.5">${fmt(d.osEmision)}</span></div>
+        <div class="p-2 flex flex-col justify-center"><span class="text-[7px] font-bold text-slate-500 uppercase block">VENCIMIENTO</span><span class="font-mono font-bold text-slate-900 mt-0.5">${fmt(d.osVenc)}</span></div>
+      </div>
+    </div>
 
-      <!-- Fila 8: Tipo | Parentesco | Sexo | Edad -->
-      <tr>
-        <td class="label centro" colspan="3">TIPO DE BENEFICIARIO</td>
-        <td class="label centro" colspan="4">PARENTESCO</td>
-        <td class="label centro" colspan="2">SEXO</td>
-        <td class="label centro" colspan="3">EDAD</td>
-      </tr>
-      <tr>
-        <td class="label centro chico">TITULAR</td>
-        <td class="label centro chico">NO TITULAR</td>
-        <td class="label centro chico">ADHERE.</td>
-        <td class="label centro chico">CONYUG.</td>
-        <td class="label centro chico">HIJO</td>
-        <td class="label centro chico">OTRO</td>
-        <td class="label centro chico"></td>
-        <td class="label centro chico">MASC</td>
-        <td class="label centro chico">FEM</td>
-        <td class="label centro chico"></td>
-        <td class="label centro chico" colspan="2"></td>
-      </tr>
-      <tr>
-        <td class="valor centro">${X(d.tipoBeneficiario === "TITULAR")}</td>
-        <td class="valor centro">${X(d.tipoBeneficiario === "NO TITULAR")}</td>
-        <td class="valor centro">${X(d.tipoBeneficiario === "ADHERENTE")}</td>
-        <td class="valor centro">${X(d.parentesco === "CONYUGE")}</td>
-        <td class="valor centro">${X(d.parentesco === "HIJO")}</td>
-        <td class="valor centro">${X(d.parentesco === "OTRO")}</td>
-        <td class="valor centro"></td>
-        <td class="valor centro">${X(d.sexo === "MASC")}</td>
-        <td class="valor centro">${X(d.sexo === "FEM")}</td>
-        <td class="valor centro"></td>
-        <td class="valor centro" colspan="2">${esc(d.edad || "")}</td>
-      </tr>
+    <div class="border border-slate-900 border-t-0 grid grid-cols-3 divide-x divide-slate-900 text-[8px] mt-2 flex-grow">
+      <div class="p-2 flex flex-col justify-between text-center"><span class="font-bold text-slate-700 uppercase">FIRMA RESPONSABLE</span><div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Firma y Sello</div></div>
+      <div class="p-2 flex flex-col justify-between text-center"><span class="font-bold text-slate-700 uppercase">ACLARACIÓN</span><div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Aclaración de Firma</div></div>
+      <div class="p-2 flex flex-col justify-between text-center"><span class="font-bold text-slate-700 uppercase">BENEFICIARIO</span><div class="border-t border-slate-400 mt-auto pt-1 text-slate-400">Firma del Beneficiario</div></div>
+    </div>
 
-      <!-- Fila 11: TIPO DE ATENCION -->
-      <tr><td class="seccion" colspan="12">TIPO DE ATENCION</td></tr>
-
-      <!-- Fila 12: Consulta | Especialidad -->
-      <tr>
-        <td class="label" colspan="3">CONSULTA</td>
-        <td class="valor centro">${X(d.tipoAtencion === "CONSULTA")}</td>
-        <td class="label centro" colspan="3">ESPECIALIDAD</td>
-        <td class="valor centro" colspan="5">${esc(d.especialidad || "")}</td>
-      </tr>
-
-      <!-- Fila 13: Práctica | Código HPGD -->
-      <tr>
-        <td class="label" colspan="3">PRÁCTICA</td>
-        <td class="valor centro">${X(d.tipoAtencion === "PRACTICA")}</td>
-        <td class="label centro" colspan="3">CODIGO n. HPGD</td>
-        <td class="valor centro" colspan="2">${esc(d.codigoHPGD || "")}</td>
-        <td class="valor centro chico" colspan="3">${esc(concepto)}</td>
-      </tr>
-
-      <!-- Fila 14: Internac | CIE-10 | Otros -->
-      <tr>
-        <td class="label" colspan="3">INTERNAC.</td>
-        <td class="valor centro">${X(d.tipoAtencion === "INTERNACION")}</td>
-        <td class="label centro" colspan="3">DIAGNOSTICO CIE 10</td>
-        <td class="valor centro" colspan="2">${esc(d.cie10 || "")}</td>
-        <td class="label centro" colspan="2">OTROS</td>
-        <td class="valor centro"></td>
-      </tr>
-
-      <!-- Fila 15: Firma médico + Último recibo -->
-      <tr>
-        <td class="firma" colspan="8" rowspan="2">Firma del Médico y Sello con Nº de Matrícula</td>
-        <td class="label centro" colspan="2">Ultimo Recibo</td>
-        <td class="label centro">MES</td>
-        <td class="label centro">AÑO</td>
-      </tr>
-      <tr>
-        <td class="label centro chico" colspan="2">de Sueldo</td>
-        <td class="valor centro">${esc(d.mesRecibo || "")}</td>
-        <td class="valor centro">${esc(d.anioRecibo || "")}</td>
-      </tr>
-
-      <!-- Fila 17: Obra social -->
-      <tr>
-        <td class="label" colspan="8">DATOS DE LA OBRA SOCIAL: Nombre Completo</td>
-        <td class="label centro" colspan="4">RNOS</td>
-      </tr>
-      <tr>
-        <td class="valor centro" colspan="8">${esc(os.nombre)}</td>
-        <td class="valor centro" colspan="4">${esc(os.rnos || "")}</td>
-      </tr>
-
-      <!-- Fila 19: Carnet / Emisión / Vencimiento -->
-      <tr>
-        <td class="label" colspan="4">Nº de Carnet de Obra Social</td>
-        <td class="label" colspan="4">Fecha de Emisión</td>
-        <td class="label" colspan="4">Vencimiento</td>
-      </tr>
-      <tr>
-        <td class="valor centro" colspan="4">&nbsp;</td>
-        <td class="valor centro" colspan="4">&nbsp;</td>
-        <td class="valor centro" colspan="4">&nbsp;</td>
-      </tr>
-
-      <!-- Fila 21-22: Firmas -->
-      <tr>
-        <td class="firma" colspan="4">FIRMA RESPONSABLE</td>
-        <td class="firma" colspan="4">ACLARACIÓN</td>
-        <td class="firma" colspan="4">BENEFICIARIO</td>
-      </tr>
-      <tr>
-        <td class="label centro chico" colspan="4">ADMINISTRATIVO CONTABLE</td>
-        <td colspan="4" class="sin-borde"></td>
-        <td colspan="4" class="sin-borde"></td>
-      </tr>
-    </table>
+    <div class="pt-2 mt-2 text-[7px] text-slate-400 border-t border-slate-200 flex justify-between">
+      <span>Documento Oficial HPGD - Hospital San Cristóbal "Julio César Villanueva"</span>
+      <span>Anexo II - Comprobante Original</span>
+    </div>
   </div>
   `;
 }
 
-// ─── Render ────────────────────────────────────────────────────
-function itemMatches(item) {
-  if (!filtro) return true;
-  const d = item.datos;
-  const os = OBRAS.find(o => o.id === d.obraSocialId);
-  const texto = [
-    d.nombre, d.dni, d.cie10, d.especialidad, d.codigoHPGD,
-    os && os.id, os && os.nombre, fechaTxt(d)
-  ].filter(Boolean).join(" ").toLowerCase();
-  return texto.includes(filtro);
-}
-
-function renderPlanillas() {
-  const cont  = $("contenedorPlanillas");
-  const empty = $("emptyResumen");
-  const info  = $("resumenInfo");
-
-  const filtrados = historial.filter(itemMatches);
-  $("badgeCantidad").textContent = historial.length;
-  info.textContent = (filtro && historial.length)
-    ? `${filtrados.length} de ${historial.length} planillas`
-    : "";
-
-  if (historial.length === 0) {
-    cont.innerHTML = "";
-    empty.classList.remove("hidden");
-    return;
-  }
-  empty.classList.add("hidden");
-  cont.innerHTML = filtrados.map(item => htmlPlanilla(item.datos, item)).join("");
-}
-
-function setFiltro(valor) {
-  filtro = valor.trim().toLowerCase();
-  renderPlanillas();
-}
-
-// ─── Imprimir ─────────────────────────────────────────────────
-function imprimirPlanilla(id) {
-  const el = document.querySelector(`.planilla[data-id="${id}"]`);
-  if (!el) return;
-  document.body.classList.add("print-single");
-  document.querySelectorAll(".planilla").forEach(p => p.classList.remove("print-target"));
-  el.classList.add("print-target");
-  window.print();
-  setTimeout(() => {
-    document.body.classList.remove("print-single");
-    document.querySelectorAll(".planilla").forEach(p => p.classList.remove("print-target"));
-  }, 300);
-}
-function imprimirTodas() {
-  if (historial.length === 0) { alert("No hay planillas cargadas para imprimir."); return; }
-  document.body.classList.remove("print-single");
-  document.querySelectorAll(".planilla").forEach(p => p.classList.remove("print-target"));
-  window.print();
-}
-
-// ─── Exportar / Importar ──────────────────────────────────────
-function exportarJSON() {
-  if (historial.length === 0) { alert("No hay planillas para exportar."); return; }
-  const payload = { app: "anexo2_planillas", exportado: new Date().toISOString(), planillas: historial };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = `anexo2_planillas_${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(a.href);
-}
-function importarJSON(input) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      const arr = Array.isArray(data) ? data : data.planillas;
-      if (!Array.isArray(arr)) throw new Error("formato");
-      let agregadas = 0;
-      arr.forEach((x, i) => {
-        if (x && x.datos && typeof x.datos === "object") {
-          historial.unshift({ id: Date.now() + i, datos: x.datos });
-          agregadas++;
-        }
+// ═══════════════════════════════════════════════════════════
+// BIND DE EVENTOS
+// ═══════════════════════════════════════════════════════════
+function bindFormEvents() {
+  document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"]').forEach(el => {
+    if (!el.id || !el.id.startsWith('inp-')) return;
+    el.addEventListener('input', () => {
+      if (el.id === 'inp-fecha') onFechaChange();
+      else if (el.id === 'inp-fecha-nac') onFechaNacChange();
+      else updateSheet();
+    });
+    if (el.type === 'date') {
+      el.addEventListener('change', () => {
+        if (el.id === 'inp-fecha') onFechaChange();
+        else if (el.id === 'inp-fecha-nac') onFechaNacChange();
+        else updateSheet();
       });
-      guardarHistorial();
-      renderPlanillas();
-      alert(agregadas ? `Se importaron ${agregadas} planillas.` : "El archivo no contenía planillas válidas.");
-    } catch {
-      alert("Archivo inválido.");
     }
-    input.value = "";
-  };
-  reader.readAsText(file);
+  });
+
+  document.querySelectorAll('select').forEach(el => {
+    if (!el.id) return;
+    el.addEventListener('change', () => {
+      if (el.id === 'inp-os-preset') applyOSPreset();
+      else if (el.id === 'inp-hpgd-preset') applyHpgdPreset();
+      else if (el.id.startsWith('inp-')) updateSheet();
+    });
+  });
+
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => {
+    if (!el.id || !el.id.startsWith('chk-')) return;
+    el.addEventListener('change', updateSheet);
+  });
 }
 
-// ─── Eliminar / borrar ────────────────────────────────────────
-function eliminarDelHistorial(id) {
-  if (!confirm("¿Eliminar esta planilla?")) return;
-  if (editandoId === id) salirDeEdicion();
-  historial = historial.filter(x => x.id !== id);
-  guardarHistorial();
-  renderPlanillas();
-}
-function borrarHistorial() {
-  if (historial.length === 0) return;
-  if (!confirm(`¿Borrar TODAS las planillas (${historial.length})?`)) return;
-  historial = [];
-  guardarHistorial();
-  renderPlanillas();
-}
-
-// ─── Init ─────────────────────────────────────────────────────
-window.addEventListener("DOMContentLoaded", () => {
-  cargarHistorial();
-  const hoy = new Date();
-  $("mesRecibo").value  = String(hoy.getMonth() + 1);
-  $("anioRecibo").value = String(hoy.getFullYear() % 100);
-  renderPlanillas();
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function () {
+  loadSavedHistory();
+  bindFormEvents();
+  updateSheet();
+  console.log('✅ Anexo II listo. jsPDF + html2canvas:', !!(window.jspdf && window.html2canvas));
 });
